@@ -523,10 +523,33 @@
             white-space: nowrap;
         }
 
+        /* خيار اختيار ملف محلي */
+        .local-file-btn {
+            width: 100%;
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px dashed #0284c7;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            margin-bottom: 0.8rem;
+            transition: all 0.2s;
+        }
+
+        .local-file-btn:hover {
+            background: #0284c7;
+            color: #fff;
+        }
+
+        #localAudioInput { display: none; }
+
         /* نافذة المعاينة المرئية المضمنة لتفادي حظر الصوت */
         .player-viewport {
             width: 100%;
-            height: 180px;
+            height: 210px;
             background: #000;
             border-radius: var(--radius-sm);
             overflow: hidden;
@@ -619,9 +642,9 @@
             font-weight: bold;
         }
 
-        /* قائمة الأغاني المفضلة (Playlist Modal / Drawer) */
+        /* قائمة الأغاني المفضلة (Playlist Drawer) */
         .playlist-container {
-            max-height: 130px;
+            max-height: 140px;
             overflow-y: auto;
             background: #181818;
             border-radius: 8px;
@@ -1008,6 +1031,11 @@
             <button onclick="loadMusicFromUrl()">تشغيل المقطع</button>
         </div>
 
+        <button class="local-file-btn" onclick="document.getElementById('localAudioInput').click()">
+            <i class="fa-solid fa-file-audio"></i> 📁 اختيار ملف صوتي من جوالك / جهازك
+        </button>
+        <input type="file" id="localAudioInput" accept="audio/*" onchange="loadLocalAudio(event)">
+
         <div class="spotify-actions-bar">
             <button class="btn-music-action" onclick="saveCurrentMusicToFav()"><i class="fa-solid fa-heart" style="color:#1ed760;"></i> حفظ بالمفضلة</button>
             <button class="btn-music-action" onclick="togglePlaylistView()"><i class="fa-solid fa-list-ul"></i> قائمة الأغاني (<span id="musicFavCount">0</span>)</button>
@@ -1025,7 +1053,7 @@
             </div>
             <div class="track-info">
                 <div class="track-name" id="trackName">جاهز للتشغيل</div>
-                <div class="track-artist" id="trackArtist">أدخل رابط مقطع أو اختر من مفضلتك</div>
+                <div class="track-artist" id="trackArtist">أدخل رابط مقطع أو اختر ملفك الصوتي</div>
             </div>
         </div>
 
@@ -1033,7 +1061,7 @@
         <div class="playlist-container" id="playlistContainer"></div>
     </div>
 
-    <!-- عنصر المشغل المباشر لملفات MP3/Audio -->
+    <!-- عنصر المشغل المباشر لملفات MP3/Audio المحلية -->
     <audio id="nativeAudioPlayer" loop style="display:none;"></audio>
 
     <!-- Modal النافذة المنبثقة للتفاصيل والمصادر -->
@@ -1143,7 +1171,7 @@
         let savedExclusions = JSON.parse(localStorage.getItem('slax_excluded_ids')) || [];
         let favorites = JSON.parse(localStorage.getItem('slax_favorites')) || [];
         let userStatusMap = JSON.parse(localStorage.getItem('slax_user_status')) || {};
-        let musicPlaylist = JSON.parse(localStorage.getItem('slax_music_playlist')) || []; // قائمة الأغاني المفضلة
+        let musicPlaylist = JSON.parse(localStorage.getItem('slax_music_playlist')) || [];
 
         let excludedSet = new Set([...initialExcluded, ...savedExclusions]);
         let currentFetchedList = [];
@@ -1429,8 +1457,31 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // تحميل وتشغيل الموسيقى بطريقة مضمونة 100%
-        function loadMusicFromUrl(urlToLoad = null) {
+        // تحميل ملف صوتي محلي من الجهاز
+        function loadLocalAudio(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const viewport = document.getElementById('playerViewport');
+            const nativeAudio = document.getElementById('nativeAudioPlayer');
+            viewport.classList.remove('active');
+
+            const fileUrl = URL.createObjectURL(file);
+            currentPlayingUrl = file.name;
+
+            nativeAudio.src = fileUrl;
+            nativeAudio.play().then(() => {
+                document.getElementById('trackName').innerText = file.name;
+                document.getElementById('trackArtist').innerText = "ملف محلي من الجهاز";
+                document.getElementById('albumArt').innerHTML = `<i class="fa-solid fa-file-audio" style="color:#38bdf8;"></i>`;
+                showToast("جاري تشغيل ملفك الصوتي من الجهاز! 🎵");
+                isMusicPlaying = true;
+                updateMusicFabUI();
+            }).catch(() => showToast("تعذر تشغيل هذا الملف الصوتي"));
+        }
+
+        // تحميل وتشغيل الموسيقى بطريقة تفاعلية ومكونات OEmbed
+        async function loadMusicFromUrl(urlToLoad = null) {
             const urlInput = urlToLoad || document.getElementById('musicUrlInput').value.trim();
             if (!urlInput) {
                 showToast("يرجى إدخال رابط فيديو أو أغنية أولاً!");
@@ -1442,14 +1493,45 @@
             const content = document.getElementById('viewportContent');
             const nativeAudio = document.getElementById('nativeAudioPlayer');
 
-            // إيقاف أي صوت مسبق
             nativeAudio.pause();
-            viewport.classList.add('active'); // إظهار النافذة المرئية لضمان عدم حظر الصوت من المتصفح
+            viewport.classList.add('active'); // إظهار النافذة للحرية التشغيلية
 
+            // 1. فحص روابط تيك توك وتفكيك الرابط المختصر مع OEmbed
+            if (urlInput.includes('tiktok.com')) {
+                showToast("جاري جلب بيانات مقطع TikTok...");
+                try {
+                    const res = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(urlInput)}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        content.innerHTML = data.html || `<iframe src="https://www.tiktok.com/embed/${data.embed_product_id}" allow="autoplay"></iframe>`;
+                        document.getElementById('trackName').innerText = data.title || "مقطع TikTok";
+                        document.getElementById('trackArtist').innerText = data.author_name || "@TikTok User";
+                        if (data.thumbnail_url) {
+                            document.getElementById('albumArt').innerHTML = `<img src="${data.thumbnail_url}" alt="Art">`;
+                        } else {
+                            document.getElementById('albumArt').innerHTML = `<i class="fa-brands fa-tiktok" style="color:#00f2fe;"></i>`;
+                        }
+                    } else {
+                        throw new Error("فشل الجلب الفوري");
+                    }
+                } catch (err) {
+                    // معالجة احتياطية للروابط المختصرة
+                    let cleanUrl = urlInput.split('?')[0];
+                    content.innerHTML = `<blockquote class="tiktok-embed" cite="${cleanUrl}"><a href="${cleanUrl}">تيك توك</a></blockquote><script async src="https://www.tiktok.com/embed.js"><\/script>`;
+                    document.getElementById('trackName').innerText = "مقطع TikTok";
+                    document.getElementById('trackArtist').innerText = "SLAX Audio Player";
+                    document.getElementById('albumArt').innerHTML = `<i class="fa-brands fa-tiktok" style="color:#00f2fe;"></i>`;
+                }
+
+                showToast("تم إطلاق المقطع بنجاح! 🎵");
+                isMusicPlaying = true;
+                updateMusicFabUI();
+                return;
+            }
+
+            // 2. فحص روابط YouTube
             const ytId = extractYouTubeId(urlInput);
-
             if (ytId) {
-                // تشغيل يوتيوب بضمّن مائي متكامل
                 content.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 document.getElementById('trackName').innerText = "مقطع YouTube نشط";
                 document.getElementById('trackArtist').innerText = "SLAX Background Audio";
@@ -1460,21 +1542,7 @@
                 return;
             }
 
-            if (urlInput.includes('tiktok.com')) {
-                // تشغيل تيك توك بضمّن مائي
-                let cleanUrl = urlInput.split('?')[0];
-                let videoId = cleanUrl.split('/').pop();
-                content.innerHTML = `<iframe src="https://www.tiktok.com/player/v1/${videoId}?autoplay=1" allow="autoplay" allowfullscreen></iframe>`;
-                document.getElementById('trackName').innerText = "مقطع TikTok نشط";
-                document.getElementById('trackArtist').innerText = "SLAX Audio Player";
-                document.getElementById('albumArt').innerHTML = `<i class="fa-brands fa-tiktok" style="color:#00f2fe;"></i>`;
-                showToast("جاري تشغيل مقطع TikTok! 🎵");
-                isMusicPlaying = true;
-                updateMusicFabUI();
-                return;
-            }
-
-            // ملفات MP3 والروابط المباشرة
+            // 3. ملفات MP3 والروابط المباشرة
             viewport.classList.remove('active');
             nativeAudio.src = urlInput;
             nativeAudio.play().then(() => {
@@ -1485,7 +1553,7 @@
                 isMusicPlaying = true;
                 updateMusicFabUI();
             }).catch(() => {
-                showToast("تأكد من صحة الرابط أو استخدم رابط YouTube/TikTok مباشر");
+                showToast("تأكد من صحة الرابط أو استخدم خيار اختيار ملف من جهازك");
             });
         }
 
@@ -1530,7 +1598,9 @@
         }
 
         function playMusicFromFav(url) {
-            document.getElementById('musicUrlInput').value = url;
+            if (!url.startsWith('blob:')) {
+                document.getElementById('musicUrlInput').value = url;
+            }
             loadMusicFromUrl(url);
         }
 
