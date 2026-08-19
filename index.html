@@ -594,19 +594,20 @@
         }
 
         .spotify-btn.play-btn {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: #fff;
             color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            cursor: pointer;
         }
 
         .spotify-btn.play-btn:hover {
-            transform: scale(1.05);
+            transform: scale(1.08);
             background: var(--green-color);
         }
 
@@ -629,7 +630,7 @@
             cursor: pointer;
         }
 
-        /* حاوية التضمين الخلفي لـ TikTok و YouTube */
+        /* حاوية عناصر التشغيل المخفية والمدمجة */
         #hiddenPlayerContainer {
             position: fixed;
             bottom: -9999px;
@@ -985,7 +986,7 @@
             </div>
             <div class="track-info">
                 <div class="track-name" id="trackName">جاهز للتشغيل</div>
-                <div class="track-artist" id="trackArtist">يدعم TikTok & YouTube</div>
+                <div class="track-artist" id="trackArtist">يدعم TikTok & YouTube & MP3</div>
             </div>
         </div>
 
@@ -1003,7 +1004,7 @@
         </div>
     </div>
 
-    <!-- عنصر مشغل الصوت الخلفي السري لـ YouTube & TikTok & Direct Audio -->
+    <!-- عنصر مشغل الصوت الخلفي المدمج -->
     <div id="hiddenPlayerContainer"></div>
     <audio id="nativeAudioPlayer" loop style="display:none;"></audio>
 
@@ -1079,8 +1080,6 @@
 
     <!-- IFrame API لجلب اليوتيوب وتشغيله صوتياً -->
     <script src="https://www.youtube.com/iframe_api"></script>
-    <!-- مكتبة تيك توك للتضمين التشغيلي -->
-    <script async src="https://www.tiktok.com/embed.js"></script>
 
     <script>
         // قائمة التصنيفات المحظورة للأمان
@@ -1392,17 +1391,16 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // التحقق مما إذا كان الرابط هو تيك توك
+        // التحقق من نوع الرابط
         function isTikTokUrl(url) {
             return url.includes('tiktok.com');
         }
 
-        // التحقق مما إذا كان الرابط صوتي مباشر
         function isAudioDirectUrl(url) {
             return url.match(/\.(mp3|wav|ogg|m4a)$/i);
         }
 
-        // تحميل وتفعيل الصوت من الروابط المختلفة
+        // تحميل الصوت وتفعيله
         async function loadMusicFromUrl() {
             const urlInput = document.getElementById('musicUrlInput').value.trim();
             if (!urlInput) {
@@ -1427,23 +1425,25 @@
                 document.getElementById('trackName').innerText = "مقطع YouTube جاري التشغيل";
                 document.getElementById('trackArtist').innerText = "SLAX Background Audio";
                 document.getElementById('albumArt').innerHTML = `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="Art">`;
-                showToast("تم تشغيل الصوت من YouTube! 🎵");
+                showToast("جاري تجهيز وتظليل صوت YouTube... 🎵");
                 return;
             }
 
             // 3. فحص الروابط الصوتية المباشرة (MP3 / WAV)
-            if (isAudioDirectUrl(urlInput)) {
+            if (isAudioDirectUrl(urlInput) || urlInput.startsWith('http')) {
                 activeMode = 'NATIVE';
                 const audioEl = document.getElementById('nativeAudioPlayer');
                 audioEl.src = urlInput;
                 audioEl.play().then(() => {
                     isMusicPlaying = true;
                     updatePlayBtnUI();
-                    document.getElementById('trackName').innerText = "ملف صوتي مباشر (MP3)";
+                    document.getElementById('trackName').innerText = "ملف صوتي مباشر";
                     document.getElementById('trackArtist').innerText = "SLAX Audio Player";
                     document.getElementById('albumArt').innerHTML = `<i class="fa-solid fa-music"></i>`;
                     showToast("جاري تشغيل الملف الصوتي! 🎵");
-                }).catch(e => showToast("تعذر تشغيل هذا الملف الصوتي"));
+                }).catch(() => {
+                    showToast("حاول مرة أخرى أو جرب رابط YouTube آخر");
+                });
                 return;
             }
 
@@ -1455,40 +1455,24 @@
             const container = document.getElementById('hiddenPlayerContainer');
             container.innerHTML = '';
 
-            // استخراج المعرف إن وُجد أو استخدام رابط المقطع بـ BlockQuote
-            let videoId = "";
-            const match = url.match(/\/video\/(\d+)/);
-            if (match && match[1]) {
-                videoId = match[1];
-            }
+            let cleanUrl = url;
+            if(cleanUrl.includes('?')) cleanUrl = cleanUrl.split('?')[0];
 
-            const blockquote = document.createElement('blockquote');
-            blockquote.className = 'tiktok-embed';
-            blockquote.setAttribute('cite', url);
-            if (videoId) blockquote.setAttribute('data-video-id', videoId);
-            blockquote.style.maxWidth = '325px';
-            blockquote.style.minWidth = '320px';
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.tiktok.com/player/v1/${cleanUrl.split('/').pop()}?autoplay=1`;
+            iframe.style.width = "300px";
+            iframe.style.height = "200px";
+            iframe.allow = "autoplay";
 
-            const section = document.createElement('section');
-            blockquote.appendChild(section);
-            container.appendChild(blockquote);
+            container.appendChild(iframe);
 
-            // تفعيل مكتبة TikTok Embed
-            if (window.tiktokEmbed) {
-                window.tiktokEmbed.load();
-            } else {
-                const script = document.createElement('script');
-                script.src = "https://www.tiktok.com/embed.js";
-                document.body.appendChild(script);
-            }
-
-            document.getElementById('trackName').innerText = "مقطع TikTok جاري التشغيل";
+            document.getElementById('trackName').innerText = "مقطع TikTok";
             document.getElementById('trackArtist').innerText = "SLAX Background Audio";
             document.getElementById('albumArt').innerHTML = `<i class="fa-brands fa-tiktok" style="color:#00f2fe;"></i>`;
 
             isMusicPlaying = true;
             updatePlayBtnUI();
-            showToast("تم جلب مقطع TikTok بنجاح! 🎵");
+            showToast("تم إطلاق مشغل TikTok بنجاح! 🎵");
         }
 
         function initYouTubePlayer(videoId) {
@@ -1496,12 +1480,12 @@
             container.innerHTML = '<div id="hiddenPlayerFrame"></div>';
 
             if (ytPlayer && ytPlayer.destroy) {
-                ytPlayer.destroy();
+                try { ytPlayer.destroy(); } catch(e){}
             }
 
             ytPlayer = new YT.Player('hiddenPlayerFrame', {
-                height: '1',
-                width: '1',
+                height: '100',
+                width: '100',
                 videoId: videoId,
                 playerVars: {
                     'autoplay': 1,
@@ -1541,13 +1525,14 @@
             updatePlayBtnUI();
         }
 
+        // زر التشغيل والإيقاف الموحد
         function togglePlayPause() {
             if (activeMode === 'YT' && ytPlayer) {
                 if (isMusicPlaying) {
-                    ytPlayer.pauseVideo();
+                    if(ytPlayer.pauseVideo) ytPlayer.pauseVideo();
                     isMusicPlaying = false;
                 } else {
-                    ytPlayer.playVideo();
+                    if(ytPlayer.playVideo) ytPlayer.playVideo();
                     isMusicPlaying = true;
                 }
             } else if (activeMode === 'NATIVE') {
@@ -1560,9 +1545,19 @@
                     isMusicPlaying = true;
                 }
             } else if (activeMode === 'TIKTOK') {
-                showToast("المحتوى يعمل عبر مشغل TikTok المضمن بالأسفل");
+                const iframe = document.querySelector('#hiddenPlayerContainer iframe');
+                if(iframe) {
+                    if(isMusicPlaying) {
+                        iframe.style.display = 'none';
+                        isMusicPlaying = false;
+                    } else {
+                        iframe.style.display = 'block';
+                        isMusicPlaying = true;
+                    }
+                }
             } else {
-                showToast("يرجى إدخال رابط تشغيل أولاً!");
+                showToast("ضع رابطاً أولاً ثم اضغط تشغيل!");
+                return;
             }
             updatePlayBtnUI();
         }
@@ -1649,7 +1644,7 @@
             document.getElementById('modalOverlay').classList.add('active');
         }
 
-        // ترجمة الوصف فورياً ومباشرة بدون مفتاح مع الحفاظ على اسم المانهوا بالإنجليزية
+        // ترجمة الوصف فورياً ومباشرة مع الحفاظ على اسم المانهوا بالإنجليزية
         async function translateCurrentDesc() {
             const tBtn = document.getElementById('translateBtn');
             const descEl = document.getElementById('modalDesc');
