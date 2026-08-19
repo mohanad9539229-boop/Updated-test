@@ -219,6 +219,28 @@
             color: #ffffff;
         }
 
+        .btn-starz {
+            background: #200b3b;
+            color: #d8b4fe;
+            border: 1px solid #7e22ce;
+        }
+
+        .btn-starz:hover {
+            background: #6b21a8;
+            color: #ffffff;
+        }
+
+        .btn-translate {
+            background: #0f382c;
+            color: #6ee7b7;
+            border: 1px solid #059669;
+        }
+
+        .btn-translate:hover {
+            background: #059669;
+            color: #ffffff;
+        }
+
         .btn-tab {
             background: var(--bg-color);
             border: 1px solid var(--border-color);
@@ -281,7 +303,7 @@
         .card-img-wrap {
             position: relative;
             width: 100%;
-            padding-top: 140%; /* aspect ratio 1:1.4 */
+            padding-top: 140%;
             overflow: hidden;
             background: #120406;
         }
@@ -423,9 +445,9 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            max-width: 640px;
+            max-width: 680px;
             width: 100%;
-            max-height: 90vh;
+            max-height: 92vh;
             overflow-y: auto;
             text-align: right;
             padding: 1.5rem;
@@ -503,6 +525,13 @@
             font-size: 0.78rem;
             color: var(--text-dim);
             border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .desc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.4rem;
         }
 
         .modal-desc {
@@ -599,7 +628,6 @@
             color: var(--accent-dark);
         }
 
-        /* استيراد/تصدير الملفات */
         #importFileInput { display: none; }
     </style>
 </head>
@@ -608,7 +636,7 @@
     <header>
         <div class="header-content">
             <h1>SLAX <span>MANHWA</span> <i class="fa-solid fa-fire-flame-curved" style="font-size: 1.8rem;"></i></h1>
-            <p class="sub">تصفح وقراءة المانهوا الكورية عبر مصادر عربية موثوقة وبدون تكرار</p>
+            <p class="sub">تصفح وقراءة المانهوا الكورية عبر مصادر عربية موثوقة ومترجم ذكي للوصف</p>
         </div>
     </header>
 
@@ -723,22 +751,37 @@
                 <div class="status-option" id="st-completed" onclick="setUserStatus('COMPLETED')">✅ أكملتها</div>
             </div>
 
+            <div class="desc-header">
+                <span style="font-size: 0.85rem; font-weight: bold; color: var(--text-dim);"><i class="fa-solid fa-align-right"></i> القصة والوصف:</span>
+                <button class="btn btn-translate" id="translateBtn" onclick="translateCurrentDesc()" style="padding: 0.3rem 0.8rem; font-size: 0.78rem;">
+                    <i class="fa-solid fa-language"></i> ترجمة الوصف للعربية
+                </button>
+            </div>
             <div class="modal-desc" id="modalDesc">الوصف غير متوفر حالياً.</div>
 
-            <!-- مصادر القراءة والمواقع العربية -->
+            <!-- مصادر القراءة والم مواقع العربية -->
             <div class="sources-title"><i class="fa-solid fa-book-bookmark"></i> مصادر القراءة والترجمة العربية:</div>
             <div class="modal-actions" style="margin-bottom: 1rem;">
+                <a id="searchMangaStarzBtn" target="_blank" class="btn btn-starz">
+                    <i class="fa-solid fa-star"></i> Manga Starz
+                </a>
                 <a id="searchManhuaRTLBtn" target="_blank" class="btn btn-arabic-source">
                     <i class="fa-solid fa-globe"></i> ManhuaRTL
                 </a>
                 <a id="searchTeamXBtn" target="_blank" class="btn btn-arabic-source">
-                    <i class="fa-solid fa-layer-group"></i> TeamX
+                    <i class="fa-solid fa-layer-group"></i> TeamX (Olympus)
                 </a>
                 <a id="searchMangaLekBtn" target="_blank" class="btn btn-arabic-source">
                     <i class="fa-solid fa-book-open-reader"></i> MangaLek
                 </a>
+                <a id="searchAzoraBtn" target="_blank" class="btn btn-arabic-source">
+                    <i class="fa-solid fa-shield-halved"></i> Azora World
+                </a>
+                <a id="searchSwatBtn" target="_blank" class="btn btn-arabic-source">
+                    <i class="fa-solid fa-mask"></i> Swat Manga
+                </a>
                 <a id="searchGoogleArBtn" target="_blank" class="btn btn-outline">
-                    <i class="fa-brands fa-google"></i> بحث عربي (Google)
+                    <i class="fa-brands fa-google"></i> بحث (Google)
                 </a>
             </div>
 
@@ -753,6 +796,9 @@
     <div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">تمت العملية بنجاح!</span></div>
 
     <script>
+        // مفتاح أمان لـ Gemini API
+        const apiKey = "";
+
         // قائمة التصنيفات المحظورة للأمان
         const blockedGenres = ["Boys Love", "Ecchi", "Hentai", "Yaoi", "Erotica", "Shounen Ai", "Yuri", "Shoujo Ai"];
 
@@ -788,11 +834,13 @@
         // الحالة والتخزين المحلي
         let savedExclusions = JSON.parse(localStorage.getItem('slax_excluded_ids')) || [];
         let favorites = JSON.parse(localStorage.getItem('slax_favorites')) || [];
-        let userStatusMap = JSON.parse(localStorage.getItem('slax_user_status')) || {}; // { id: 'READING' | 'PLANNING' | 'COMPLETED' }
+        let userStatusMap = JSON.parse(localStorage.getItem('slax_user_status')) || {};
 
         let excludedSet = new Set([...initialExcluded, ...savedExclusions]);
         let currentFetchedList = [];
         let activeItem = null;
+        let originalDescText = "";
+        let isTranslated = false;
         let showingFavs = false;
 
         // التحقق من سلامة وصلاحية المحتوى
@@ -1031,10 +1079,12 @@
         // فتح نافذة التفاصيل والمصادر
         function openModal(item) {
             activeItem = item;
+            isTranslated = false;
             const title = item.title.english || item.title.romaji || "بدون عنوان";
 
             let cleanDesc = item.description || 'لا يوجد وصف متوفر لهذه المانهوا حالياً.';
             cleanDesc = cleanDesc.replace(/<[^>]*>?/gm, '');
+            originalDescText = cleanDesc;
 
             document.getElementById('modalImg').src = item.coverImage.large;
             document.getElementById('modalTitle').innerText = title;
@@ -1044,24 +1094,93 @@
             document.getElementById('modalGenres').innerText = item.genres ? item.genres.join(' • ') : 'Manhwa';
             document.getElementById('modalDesc').innerText = cleanDesc;
 
+            // إعادة ضبط زر الترجمة
+            const tBtn = document.getElementById('translateBtn');
+            tBtn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الوصف للعربية`;
+            tBtn.disabled = false;
+
             // مصادر القراءة والترجمة العربية
             const encodedTitle = encodeURIComponent(title);
             
-            // رابط ManhuaRTL
+            // Manga Starz
+            document.getElementById('searchMangaStarzBtn').href = `https://manga-starz.net/?s=${encodedTitle}`;
+
+            // ManhuaRTL
             document.getElementById('searchManhuaRTLBtn').href = `https://manhuarmtl.com/?s=${encodedTitle}`;
             
-            // رابط TeamX
-            document.getElementById('searchTeamXBtn').href = `https://teamx.net/?s=${encodedTitle}`;
+            // TeamX (Olympus Staff)
+            document.getElementById('searchTeamXBtn').href = `https://olympustaff.com/?s=${encodedTitle}`;
             
-            // رابط MangaLek
+            // MangaLek
             document.getElementById('searchMangaLekBtn').href = `https://mangalek.com/?s=${encodedTitle}`;
+
+            // Azora World
+            document.getElementById('searchAzoraBtn').href = `https://azora.vip/?s=${encodedTitle}`;
+
+            // Swat Manga
+            document.getElementById('searchSwatBtn').href = `https://swatmanga.me/?s=${encodedTitle}`;
             
-            // بحث قوقل بالعربي للمانهوا المترجمة
+            // Google البحث العربي
             document.getElementById('searchGoogleArBtn').href = `https://www.google.com/search?q=${encodeURIComponent('مانهوا ' + title + ' مترجمة')}`;
 
             updateModalStatusSelector();
             updateModalFavBtn();
             document.getElementById('modalOverlay').classList.add('active');
+        }
+
+        // ترجمة الوصف المباشرة عبر Gemini API دون ترجمة الاسم
+        async function translateCurrentDesc() {
+            const tBtn = document.getElementById('translateBtn');
+            const descEl = document.getElementById('modalDesc');
+
+            if (isTranslated) {
+                descEl.innerText = originalDescText;
+                tBtn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الوصف للعربية`;
+                isTranslated = false;
+                return;
+            }
+
+            tBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الترجمة...`;
+            tBtn.disabled = true;
+
+            const promptText = `قم بترجمة وصف المانهوا التالي إلى اللغة العربية بأسلوب أدبي مشوق وسلس. 
+تنبيه هام جداً: لا تقم بترجمة أي أسماء مانهوا أو مصطلحات إنجليزية خاصة بالأعلام، اترك الاسم باللغة الإنجليزية كما هو.
+النص:
+${originalDescText}`;
+
+            let delay = 1000;
+            for (let attempt = 0; attempt < 5; attempt++) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: promptText }] }]
+                        })
+                    });
+
+                    if (!response.ok) throw new Error("فشل طلب الترجمة");
+
+                    const data = await response.json();
+                    const translatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                    if (translatedText) {
+                        descEl.innerText = translatedText;
+                        tBtn.innerHTML = `<i class="fa-solid fa-undo"></i> النص الأصلي`;
+                        tBtn.disabled = false;
+                        isTranslated = true;
+                        showToast("تمت ترجمة الوصف بنجاح!");
+                        return;
+                    }
+                } catch (e) {
+                    await new Promise(r => setTimeout(r, delay));
+                    delay *= 2;
+                }
+            }
+
+            showToast("تعذرت الترجمة حالياً، يرجى المحاولة لاحقاً");
+            tBtn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الوصف للعربية`;
+            tBtn.disabled = false;
         }
 
         // تحديث زر القراءة الشخصية داخل المودال
