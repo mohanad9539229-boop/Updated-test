@@ -451,7 +451,7 @@
             100% { box-shadow: 0 0 0 0 rgba(30, 215, 96, 0); }
         }
 
-        /* 🎧 مشغل الموسيقى وقائمة الأغاني المفضلة 🎧 */
+        /* 🎧 مشغل سبوتيفاي المحسن 🎧 */
         .spotify-widget {
             position: fixed;
             bottom: 90px;
@@ -546,10 +546,10 @@
 
         #localAudioInput { display: none; }
 
-        /* نافذة المعاينة المرئية المضمنة لتفادي حظر الصوت */
+        /* نافذة العرض لتجنب حظر الصوت */
         .player-viewport {
             width: 100%;
-            height: 210px;
+            height: 190px;
             background: #000;
             border-radius: var(--radius-sm);
             overflow: hidden;
@@ -617,10 +617,71 @@
             color: var(--text-dim);
         }
 
+        /* 🎛️ أزرار التحكم الخاصة بسبوتيفاي 🎛️ */
+        .spotify-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 0.8rem;
+        }
+
+        .spotify-btn {
+            background: transparent;
+            border: none;
+            color: #b3b3b3;
+            font-size: 1.15rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .spotify-btn:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .spotify-btn.play-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+        }
+
+        .spotify-btn.play-btn:hover {
+            transform: scale(1.08);
+            background: var(--green-color);
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 0.4rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .volume-container i {
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        .volume-slider {
+            width: 100%;
+            accent-color: var(--green-color);
+            cursor: pointer;
+            height: 4px;
+        }
+
         .spotify-actions-bar {
             display: flex;
             gap: 6px;
-            margin-bottom: 0.8rem;
         }
 
         .btn-music-action {
@@ -642,7 +703,7 @@
             font-weight: bold;
         }
 
-        /* قائمة الأغاني المفضلة (Playlist Drawer) */
+        /* قائمة الأغاني المفضلة */
         .playlist-container {
             max-height: 140px;
             overflow-y: auto;
@@ -1027,7 +1088,7 @@
         </div>
 
         <div class="spotify-input-group">
-            <input type="text" id="musicUrlInput" placeholder="ضع رابط YouTube أو TikTok أو MP3 هنا...">
+            <input type="text" id="musicUrlInput" placeholder="ضع رابط TikTok أو YouTube أو MP3 هنا...">
             <button onclick="loadMusicFromUrl()">تشغيل المقطع</button>
         </div>
 
@@ -1035,12 +1096,6 @@
             <i class="fa-solid fa-file-audio"></i> 📁 اختيار ملف صوتي من جوالك / جهازك
         </button>
         <input type="file" id="localAudioInput" accept="audio/*" onchange="loadLocalAudio(event)">
-
-        <div class="spotify-actions-bar">
-            <button class="btn-music-action" onclick="saveCurrentMusicToFav()"><i class="fa-solid fa-heart" style="color:#1ed760;"></i> حفظ بالمفضلة</button>
-            <button class="btn-music-action" onclick="togglePlaylistView()"><i class="fa-solid fa-list-ul"></i> قائمة الأغاني (<span id="musicFavCount">0</span>)</button>
-            <button class="btn-music-action" onclick="toggleViewport()"><i class="fa-solid fa-eye"></i> إظهار/إخفاء المقطع</button>
-        </div>
 
         <!-- نافذة عرض مقطع الفيديو المضمن للحفاظ على الصوت مضموناً -->
         <div class="player-viewport" id="playerViewport">
@@ -1055,6 +1110,26 @@
                 <div class="track-name" id="trackName">جاهز للتشغيل</div>
                 <div class="track-artist" id="trackArtist">أدخل رابط مقطع أو اختر ملفك الصوتي</div>
             </div>
+        </div>
+
+        <!-- 🎛️ أزرار التحكم بأسلوب سبوتيفاي 🎛️ -->
+        <div class="spotify-controls">
+            <button class="spotify-btn" onclick="seekMusic(-10)" title="تراجع 10 ثواني"><i class="fa-solid fa-backward-step"></i></button>
+            <button class="spotify-btn play-btn" id="playPauseBtn" onclick="togglePlayPause()" title="تشغيل / إيقاف">
+                <i class="fa-solid fa-play"></i>
+            </button>
+            <button class="spotify-btn" onclick="seekMusic(10)" title="تقديم 10 ثواني"><i class="fa-solid fa-forward-step"></i></button>
+        </div>
+
+        <div class="volume-container">
+            <i class="fa-solid fa-volume-high"></i>
+            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" oninput="changeVolume(this.value)">
+        </div>
+
+        <div class="spotify-actions-bar">
+            <button class="btn-music-action" onclick="saveCurrentMusicToFav()"><i class="fa-solid fa-heart" style="color:#1ed760;"></i> حفظ بالمفضلة</button>
+            <button class="btn-music-action" onclick="togglePlaylistView()"><i class="fa-solid fa-list-ul"></i> قائمة الأغاني (<span id="musicFavCount">0</span>)</button>
+            <button class="btn-music-action" onclick="toggleViewport()"><i class="fa-solid fa-eye"></i> إظهار/إخفاء</button>
         </div>
 
         <!-- قائمة الأغاني المفضلة المحفوظة -->
@@ -1183,6 +1258,7 @@
         // متغيرات المشغل الموسيقي
         let currentPlayingUrl = "";
         let isMusicPlaying = false;
+        let activeAudioType = 'NONE'; // 'EMBED', 'NATIVE'
 
         // التحقق من سلامة وصلاحية المحتوى
         function isClean(item) {
@@ -1468,6 +1544,7 @@
 
             const fileUrl = URL.createObjectURL(file);
             currentPlayingUrl = file.name;
+            activeAudioType = 'NATIVE';
 
             nativeAudio.src = fileUrl;
             nativeAudio.play().then(() => {
@@ -1495,6 +1572,7 @@
 
             nativeAudio.pause();
             viewport.classList.add('active'); // إظهار النافذة للحرية التشغيلية
+            activeAudioType = 'EMBED';
 
             // 1. فحص روابط تيك توك وتفكيك الرابط المختصر مع OEmbed
             if (urlInput.includes('tiktok.com')) {
@@ -1515,7 +1593,6 @@
                         throw new Error("فشل الجلب الفوري");
                     }
                 } catch (err) {
-                    // معالجة احتياطية للروابط المختصرة
                     let cleanUrl = urlInput.split('?')[0];
                     content.innerHTML = `<blockquote class="tiktok-embed" cite="${cleanUrl}"><a href="${cleanUrl}">تيك توك</a></blockquote><script async src="https://www.tiktok.com/embed.js"><\/script>`;
                     document.getElementById('trackName').innerText = "مقطع TikTok";
@@ -1532,7 +1609,7 @@
             // 2. فحص روابط YouTube
             const ytId = extractYouTubeId(urlInput);
             if (ytId) {
-                content.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                content.innerHTML = `<iframe id="ytIframePlayer" src="https://www.youtube.com/embed/${ytId}?autoplay=1&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 document.getElementById('trackName').innerText = "مقطع YouTube نشط";
                 document.getElementById('trackArtist').innerText = "SLAX Background Audio";
                 document.getElementById('albumArt').innerHTML = `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="Art">`;
@@ -1544,6 +1621,7 @@
 
             // 3. ملفات MP3 والروابط المباشرة
             viewport.classList.remove('active');
+            activeAudioType = 'NATIVE';
             nativeAudio.src = urlInput;
             nativeAudio.play().then(() => {
                 document.getElementById('trackName').innerText = "ملف صوتي مباشر (MP3)";
@@ -1555,6 +1633,48 @@
             }).catch(() => {
                 showToast("تأكد من صحة الرابط أو استخدم خيار اختيار ملف من جهازك");
             });
+        }
+
+        // زر التشغيل والإيقاف الموحد بأسلوب سبوتيفاي
+        function togglePlayPause() {
+            const nativeAudio = document.getElementById('nativeAudioPlayer');
+            const viewport = document.getElementById('playerViewport');
+
+            if (activeAudioType === 'NATIVE') {
+                if (isMusicPlaying) {
+                    nativeAudio.pause();
+                    isMusicPlaying = false;
+                } else {
+                    nativeAudio.play();
+                    isMusicPlaying = true;
+                }
+            } else if (activeAudioType === 'EMBED') {
+                if (isMusicPlaying) {
+                    viewport.style.display = 'none';
+                    isMusicPlaying = false;
+                } else {
+                    viewport.style.display = 'block';
+                    isMusicPlaying = true;
+                }
+            } else {
+                showToast("أدخل رابطاً أو اختر ملفاً أولاً!");
+                return;
+            }
+            updateMusicFabUI();
+        }
+
+        function seekMusic(seconds) {
+            const nativeAudio = document.getElementById('nativeAudioPlayer');
+            if (activeAudioType === 'NATIVE') {
+                nativeAudio.currentTime += seconds;
+            } else {
+                showToast("يمكنك التقديم والتأخير مباشرة من نافذة الفيديو المرئية بالفيو بورت");
+            }
+        }
+
+        function changeVolume(val) {
+            const nativeAudio = document.getElementById('nativeAudioPlayer');
+            nativeAudio.volume = val / 100;
         }
 
         // حفظ الأغنية الحالية بالقائمة المفضلة
@@ -1612,8 +1732,14 @@
 
         function updateMusicFabUI() {
             const fab = document.getElementById('musicFab');
-            if (isMusicPlaying) fab.classList.add('playing');
-            else fab.classList.remove('playing');
+            const playBtn = document.getElementById('playPauseBtn');
+            if (isMusicPlaying) {
+                fab.classList.add('playing');
+                playBtn.innerHTML = `<i class="fa-solid fa-pause"></i>`;
+            } else {
+                fab.classList.remove('playing');
+                playBtn.innerHTML = `<i class="fa-solid fa-play"></i>`;
+            }
         }
 
         // فتح نافذة التفاصيل والمصادر
