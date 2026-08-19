@@ -208,6 +208,17 @@
             border-color: var(--accent-dark);
         }
 
+        .btn-arabic-source {
+            background: #800000;
+            color: #ffffff;
+            border: 1px solid var(--accent-color);
+        }
+
+        .btn-arabic-source:hover {
+            background: var(--accent-color);
+            color: #ffffff;
+        }
+
         .btn-tab {
             background: var(--bg-color);
             border: 1px solid var(--border-color);
@@ -412,7 +423,7 @@
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            max-width: 620px;
+            max-width: 640px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -499,11 +510,21 @@
             color: var(--text-dim);
             line-height: 1.7;
             margin-bottom: 1.2rem;
-            max-height: 150px;
+            max-height: 140px;
             overflow-y: auto;
             padding-left: 5px;
             border-right: 2px solid var(--accent-dark);
             padding-right: 10px;
+        }
+
+        .sources-title {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text-dim);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .modal-actions {
@@ -587,7 +608,7 @@
     <header>
         <div class="header-content">
             <h1>SLAX <span>MANHWA</span> <i class="fa-solid fa-fire-flame-curved" style="font-size: 1.8rem;"></i></h1>
-            <p class="sub">المحرك الأذكى لتصفح المانهوا الكورية بدون تكرار وبفلترة أمان متقدمة</p>
+            <p class="sub">تصفح وقراءة المانهوا الكورية عبر مصادر عربية موثوقة وبدون تكرار</p>
         </div>
     </header>
 
@@ -664,7 +685,7 @@
                     </button>
 
                     <div class="counter-badge">
-                        الروض المعروض: <span id="manhwaCountNumber">0</span>
+                        العدد المعروض: <span id="manhwaCountNumber">0</span>
                     </div>
                 </div>
             </div>
@@ -676,7 +697,7 @@
 
     </div>
 
-    <!-- Modal النافذة المنبثقة للتفاصيل -->
+    <!-- Modal النافذة المنبثقة للتفاصيل والمصادر -->
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
         <div class="modal" onclick="event.stopPropagation()">
             <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -704,11 +725,26 @@
 
             <div class="modal-desc" id="modalDesc">الوصف غير متوفر حالياً.</div>
 
+            <!-- مصادر القراءة والمواقع العربية -->
+            <div class="sources-title"><i class="fa-solid fa-book-bookmark"></i> مصادر القراءة والترجمة العربية:</div>
+            <div class="modal-actions" style="margin-bottom: 1rem;">
+                <a id="searchManhuaRTLBtn" target="_blank" class="btn btn-arabic-source">
+                    <i class="fa-solid fa-globe"></i> ManhuaRTL
+                </a>
+                <a id="searchTeamXBtn" target="_blank" class="btn btn-arabic-source">
+                    <i class="fa-solid fa-layer-group"></i> TeamX
+                </a>
+                <a id="searchMangaLekBtn" target="_blank" class="btn btn-arabic-source">
+                    <i class="fa-solid fa-book-open-reader"></i> MangaLek
+                </a>
+                <a id="searchGoogleArBtn" target="_blank" class="btn btn-outline">
+                    <i class="fa-brands fa-google"></i> بحث عربي (Google)
+                </a>
+            </div>
+
             <div class="modal-actions">
                 <button class="btn" onclick="copyTitle()"><i class="fa-solid fa-copy"></i> نسخ الاسم</button>
                 <button class="btn btn-tab" id="modalFavBtn" onclick="toggleFavCurrent()"><i class="fa-solid fa-heart"></i> إضافة للمفضلة</button>
-                <a id="searchGoogleBtn" target="_blank" class="btn btn-outline"><i class="fa-brands fa-google"></i> Google</a>
-                <a id="searchMangaUpdatesBtn" target="_blank" class="btn btn-outline"><i class="fa-solid fa-book-open"></i> MangaUpdates</a>
             </div>
         </div>
     </div>
@@ -992,7 +1028,7 @@
             applyFilters();
         }
 
-        // فتح نافذة التفاصيل
+        // فتح نافذة التفاصيل والمصادر
         function openModal(item) {
             activeItem = item;
             const title = item.title.english || item.title.romaji || "بدون عنوان";
@@ -1008,9 +1044,20 @@
             document.getElementById('modalGenres').innerText = item.genres ? item.genres.join(' • ') : 'Manhwa';
             document.getElementById('modalDesc').innerText = cleanDesc;
 
-            // روابط البحث
-            document.getElementById('searchGoogleBtn').href = `https://www.google.com/search?q=${encodeURIComponent(title + ' manhwa')}`;
-            document.getElementById('searchMangaUpdatesBtn').href = `https://www.mangaupdates.com/series.html?search=${encodeURIComponent(title)}`;
+            // مصادر القراءة والترجمة العربية
+            const encodedTitle = encodeURIComponent(title);
+            
+            // رابط ManhuaRTL
+            document.getElementById('searchManhuaRTLBtn').href = `https://manhuarmtl.com/?s=${encodedTitle}`;
+            
+            // رابط TeamX
+            document.getElementById('searchTeamXBtn').href = `https://teamx.net/?s=${encodedTitle}`;
+            
+            // رابط MangaLek
+            document.getElementById('searchMangaLekBtn').href = `https://mangalek.com/?s=${encodedTitle}`;
+            
+            // بحث قوقل بالعربي للمانهوا المترجمة
+            document.getElementById('searchGoogleArBtn').href = `https://www.google.com/search?q=${encodeURIComponent('مانهوا ' + title + ' مترجمة')}`;
 
             updateModalStatusSelector();
             updateModalFavBtn();
