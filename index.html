@@ -18,7 +18,7 @@
             --text-color: #ffffff;
             --text-dim: #b8a0a2;
             --gold-color: #ffcc00;
-            --green-color: #1ed760; /* Spotify Green */
+            --green-color: #1ed760; /* لون سبوتيفاي الأخضر المميز */
             --blue-color: #1e90ff;
             --purple-color: #9b59b6;
             --radius-sm: 8px;
@@ -451,7 +451,7 @@
             100% { box-shadow: 0 0 0 0 rgba(30, 215, 96, 0); }
         }
 
-        /* 🎧 مشغل سبوتيفاي المحسن 🎧 */
+        /* 🎧 مشغل سبوتيفاي المصمم باحترافية 🎧 */
         .spotify-widget {
             position: fixed;
             bottom: 90px;
@@ -523,33 +523,10 @@
             white-space: nowrap;
         }
 
-        /* خيار اختيار ملف محلي */
-        .local-file-btn {
-            width: 100%;
-            background: #1e293b;
-            color: #38bdf8;
-            border: 1px dashed #0284c7;
-            padding: 8px;
-            border-radius: 6px;
-            font-size: 0.78rem;
-            font-weight: bold;
-            cursor: pointer;
-            text-align: center;
-            margin-bottom: 0.8rem;
-            transition: all 0.2s;
-        }
-
-        .local-file-btn:hover {
-            background: #0284c7;
-            color: #fff;
-        }
-
-        #localAudioInput { display: none; }
-
-        /* نافذة العرض لتجنب حظر الصوت */
+        /* نافذة العرض لليوتيوب */
         .player-viewport {
             width: 100%;
-            height: 190px;
+            height: 180px;
             background: #000;
             border-radius: var(--radius-sm);
             overflow: hidden;
@@ -562,7 +539,7 @@
             display: block;
         }
 
-        .player-viewport iframe, .player-viewport video {
+        .player-viewport iframe {
             width: 100%;
             height: 100%;
             border: none;
@@ -617,7 +594,7 @@
             color: var(--text-dim);
         }
 
-        /* 🎛️ أزرار التحكم الخاصة بسبوتيفاي 🎛️ */
+        /* 🎛️ أزرار التحكم بأسلوب سبوتيفاي 🎛️ */
         .spotify-controls {
             display: flex;
             align-items: center;
@@ -657,26 +634,6 @@
         .spotify-btn.play-btn:hover {
             transform: scale(1.08);
             background: var(--green-color);
-        }
-
-        .volume-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0 0.4rem;
-            margin-bottom: 0.8rem;
-        }
-
-        .volume-container i {
-            color: var(--text-dim);
-            font-size: 0.85rem;
-        }
-
-        .volume-slider {
-            width: 100%;
-            accent-color: var(--green-color);
-            cursor: pointer;
-            height: 4px;
         }
 
         .spotify-actions-bar {
@@ -983,7 +940,7 @@
     <header>
         <div class="header-content">
             <h1>SLAX <span>MANHWA</span> <i class="fa-solid fa-fire-flame-curved" style="font-size: 1.8rem;"></i></h1>
-            <p class="sub">تصفح وقراءة المانهوا الكورية مع مشغل ومفضلة أغاني بالخلفية</p>
+            <p class="sub">تصفح وقراءة المانهوا الكورية مع مشغل يوتيوب احترافي ومفضلة أغاني</p>
         </div>
     </header>
 
@@ -1076,28 +1033,23 @@
     </div>
 
     <!-- 🎵 زر المشغل الموسيقي العائم 🎵 -->
-    <div class="music-fab" id="musicFab" onclick="toggleSpotifyWidget()" title="مشغل الموسيقى والمفضلة">
+    <div class="music-fab" id="musicFab" onclick="toggleSpotifyWidget()" title="مشغل يوتيوب والمفضلة">
         <i class="fa-brands fa-spotify"></i>
     </div>
 
-    <!-- 🎧 مشغل سبوتيفاي وقائمة الأغاني المفضلة 🎧 -->
+    <!-- 🎧 مشغل يوتيوب بأسلوب سبوتيفاي المحترف 🎧 -->
     <div class="spotify-widget" id="spotifyWidget">
         <div class="spotify-header">
-            <span><i class="fa-brands fa-spotify"></i> مشغل الأغاني & المفضلة</span>
+            <span><i class="fa-brands fa-spotify"></i> مشغل يوتيوب & المفضلة</span>
             <button class="spotify-close" onclick="toggleSpotifyWidget()"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
         <div class="spotify-input-group">
-            <input type="text" id="musicUrlInput" placeholder="ضع رابط TikTok أو YouTube أو MP3 هنا...">
-            <button onclick="loadMusicFromUrl()">تشغيل المقطع</button>
+            <input type="text" id="musicUrlInput" placeholder="ضع رابط YouTube هنا (عادي أو Shorts)...">
+            <button onclick="loadYouTubeMusic()">تشغيل</button>
         </div>
 
-        <button class="local-file-btn" onclick="document.getElementById('localAudioInput').click()">
-            <i class="fa-solid fa-file-audio"></i> 📁 اختيار ملف صوتي من جوالك / جهازك
-        </button>
-        <input type="file" id="localAudioInput" accept="audio/*" onchange="loadLocalAudio(event)">
-
-        <!-- نافذة عرض مقطع الفيديو المضمن للحفاظ على الصوت مضموناً -->
+        <!-- نافذة عرض الفيديو لضمان تشغيل الصوت بثبات -->
         <div class="player-viewport" id="playerViewport">
             <div id="viewportContent" style="width: 100%; height: 100%;"></div>
         </div>
@@ -1108,7 +1060,7 @@
             </div>
             <div class="track-info">
                 <div class="track-name" id="trackName">جاهز للتشغيل</div>
-                <div class="track-artist" id="trackArtist">أدخل رابط مقطع أو اختر ملفك الصوتي</div>
+                <div class="track-artist" id="trackArtist">أدخل رابط يوتيوب للاستماع</div>
             </div>
         </div>
 
@@ -1121,23 +1073,15 @@
             <button class="spotify-btn" onclick="seekMusic(10)" title="تقديم 10 ثواني"><i class="fa-solid fa-forward-step"></i></button>
         </div>
 
-        <div class="volume-container">
-            <i class="fa-solid fa-volume-high"></i>
-            <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80" oninput="changeVolume(this.value)">
-        </div>
-
         <div class="spotify-actions-bar">
             <button class="btn-music-action" onclick="saveCurrentMusicToFav()"><i class="fa-solid fa-heart" style="color:#1ed760;"></i> حفظ بالمفضلة</button>
             <button class="btn-music-action" onclick="togglePlaylistView()"><i class="fa-solid fa-list-ul"></i> قائمة الأغاني (<span id="musicFavCount">0</span>)</button>
-            <button class="btn-music-action" onclick="toggleViewport()"><i class="fa-solid fa-eye"></i> إظهار/إخفاء</button>
+            <button class="btn-music-action" onclick="toggleViewport()"><i class="fa-solid fa-eye"></i> إظهار/إخفاء المقطع</button>
         </div>
 
         <!-- قائمة الأغاني المفضلة المحفوظة -->
         <div class="playlist-container" id="playlistContainer"></div>
     </div>
-
-    <!-- عنصر المشغل المباشر لملفات MP3/Audio المحلية -->
-    <audio id="nativeAudioPlayer" loop style="display:none;"></audio>
 
     <!-- Modal النافذة المنبثقة للتفاصيل والمصادر -->
     <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
@@ -1242,7 +1186,6 @@
             122948, 130456, 148342
         ];
 
-        // الحالة والتخزين المحلي
         let savedExclusions = JSON.parse(localStorage.getItem('slax_excluded_ids')) || [];
         let favorites = JSON.parse(localStorage.getItem('slax_favorites')) || [];
         let userStatusMap = JSON.parse(localStorage.getItem('slax_user_status')) || {};
@@ -1255,12 +1198,11 @@
         let isTranslated = false;
         let showingFavs = false;
 
-        // متغيرات المشغل الموسيقي
+        // متغيرات المشغل
         let currentPlayingUrl = "";
         let isMusicPlaying = false;
-        let activeAudioType = 'NONE'; // 'EMBED', 'NATIVE'
+        let currentYtId = "";
 
-        // التحقق من سلامة وصلاحية المحتوى
         function isClean(item) {
             if (!item) return false;
             if (item.isAdult) return false;
@@ -1268,7 +1210,6 @@
             return true;
         }
 
-        // تحديث أعداد الشارات والتخزين
         function updateUIBadges() {
             document.getElementById('favCount').innerText = favorites.length;
             document.getElementById('musicFavCount').innerText = musicPlaylist.length;
@@ -1279,7 +1220,6 @@
             renderMusicPlaylist();
         }
 
-        // عرض إشعار سريع
         function showToast(msg) {
             const toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = msg;
@@ -1287,7 +1227,6 @@
             setTimeout(() => toast.classList.remove('show'), 2800);
         }
 
-        // جلب البيانات من AniList GraphQL
         async function fetchUniqueManhwa() {
             if (showingFavs) toggleFavView();
             
@@ -1327,51 +1266,34 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         query: query,
-                        variables: { 
-                            page: 1, 
-                            perPage: 50, 
-                            excluded: Array.from(excludedSet) 
-                        }
+                        variables: { page: 1, perPage: 50, excluded: Array.from(excludedSet) }
                     })
                 });
 
                 const result = await response.json();
-                if (!result.data || !result.data.Page || !result.data.Page.media) {
-                    throw new Error("خطأ في الاتصال بالمزود");
-                }
+                if (!result.data || !result.data.Page || !result.data.Page.media) throw new Error("API Error");
 
-                const rawList = result.data.Page.media;
-                const cleanList = rawList.filter(isClean);
-
+                const cleanList = result.data.Page.media.filter(isClean);
                 if (cleanList.length === 0) {
-                    document.getElementById('manhwaGrid').innerHTML = `
-                        <div class="empty-state">
-                            <i class="fa-solid fa-circle-check"></i>
-                            <h3>تهانينا! لقد استعرضت جميع المانهوات المتاحة حالياً.</h3>
-                        </div>`;
-                    btn.innerHTML = `<i class="fa-solid fa-check"></i> لا توجد نتائج جديدة`;
-                    document.getElementById('manhwaCountNumber').innerText = "0";
+                    document.getElementById('manhwaGrid').innerHTML = '<div class="empty-state"><i class="fa-solid fa-circle-check"></i><h3>لا توجد نتائج جديدة!</h3></div>';
+                    btn.innerHTML = `لا توجد نتائج`;
                     return;
                 }
 
                 currentFetchedList = cleanList;
                 applyFilters();
-
                 cleanList.forEach(item => excludedSet.add(item.id));
                 updateUIBadges();
 
                 btn.innerHTML = `<i class="fa-solid fa-rotate"></i> جلب 50 مانهوا جديدة`;
                 btn.disabled = false;
-
             } catch (err) {
                 console.error(err);
-                showToast("حدث خطأ أثناء جلب البيانات، يرجى المحاولة لاحقاً");
-                btn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> حاول مجدداً`;
+                btn.innerHTML = `حاول مجدداً`;
                 btn.disabled = false;
             }
         }
 
-        // عرض كروت وهمية أثناء التحميل
         function showSkeletons() {
             const grid = document.getElementById('manhwaGrid');
             grid.innerHTML = '';
@@ -1382,19 +1304,13 @@
             }
         }
 
-        // عرض الكروت الفعليه
         function renderCards(list) {
             const grid = document.getElementById('manhwaGrid');
             grid.innerHTML = '';
-
             document.getElementById('manhwaCountNumber').innerText = list.length;
 
             if(list.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fa-solid fa-filter-circle-xmark"></i>
-                        <h3>لا توجد نتائج مطابقة لخيارات الفلترة والبحث الحالية.</h3>
-                    </div>`;
+                grid.innerHTML = '<div class="empty-state"><i class="fa-solid fa-filter-circle-xmark"></i><h3>لا توجد نتائج مطابقة.</h3></div>';
                 return;
             }
 
@@ -1414,7 +1330,7 @@
                     </button>
                     <div class="card-img-wrap">
                         <img src="${item.coverImage.large}" alt="${title}" loading="lazy" onerror="this.src='https://via.placeholder.com/180x250?text=No+Cover'">
-                        <span class="status-tag ${statusClass}">${item.status === 'RELEASING' ? 'مستمر' : (item.status === 'FINISHED' ? 'مكتمل' : 'متوقف')}</span>
+                        <span class="status-tag ${statusClass}">${item.status === 'RELEASING' ? 'مستمر' : 'مكتمل'}</span>
                     </div>
                     <div class="card-info">
                         <div class="card-title" title="${title}">${title}</div>
@@ -1428,7 +1344,6 @@
             });
         }
 
-        // تطبيق جميع الفلاتر
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
             const genreTerm = document.getElementById('genreSelect').value;
@@ -1440,44 +1355,36 @@
 
             let filtered = targetList.filter(item => {
                 if(!isClean(item)) return false;
-                
                 const engTitle = (item.title.english || '').toLowerCase();
                 const romTitle = (item.title.romaji || '').toLowerCase();
                 const matchesSearch = engTitle.includes(searchTerm) || romTitle.includes(searchTerm);
                 const matchesGenre = (genreTerm === 'ALL') || (item.genres && item.genres.includes(genreTerm));
                 const matchesStatus = (statusTerm === 'ALL') || (item.status === statusTerm);
                 const matchesUserStatus = (userStatusTerm === 'ALL') || (userStatusMap[item.id] === userStatusTerm);
-
                 return matchesSearch && matchesGenre && matchesStatus && matchesUserStatus;
             });
 
-            // الترتيب
             if (sortTerm === 'SCORE_DESC') {
                 filtered.sort((a, b) => (b.averageScore || 0) - (a.averageScore || 0));
             } else if (sortTerm === 'TITLE_ASC') {
                 filtered.sort((a, b) => {
-                    const nameA = a.title.english || a.title.romaji || "";
-                    const nameB = b.title.english || b.title.romaji || "";
-                    return nameA.localeCompare(nameB);
+                    return (a.title.english || "").localeCompare(b.title.english || "");
                 });
             }
 
             renderCards(filtered);
         }
 
-        // اختيار مانهوا عشوائية
         function pickRandomManhwa() {
             const currentList = currentFetchedList.length > 0 ? currentFetchedList : favorites;
             if (!currentList || currentList.length === 0) {
-                showToast("يرجى جلب المانهوات أولاً لتجربة الاقتراح العشوائي!");
+                showToast("يرجى جلب المانهوات أولاً!");
                 return;
             }
-            const randomIndex = Math.floor(Math.random() * currentList.length);
-            openModal(currentList[randomIndex]);
+            openModal(currentList[Math.floor(Math.random() * currentList.length)]);
             showToast("🎲 تم اختيار مانهوا عشوائية لك!");
         }
 
-        // إضافة أو إزالة من المفضلة
         function toggleFav(id) {
             const foundIndex = favorites.findIndex(f => f.id === id);
             if (foundIndex > -1) {
@@ -1495,213 +1402,102 @@
             if(activeItem && activeItem.id === id) updateModalFavBtn();
         }
 
-        // تبديل عرض المفضلة
         function toggleFavView() {
             showingFavs = !showingFavs;
-            const favBtn = document.getElementById('favTabBtn');
-            if (showingFavs) {
-                favBtn.classList.add('active');
-                showToast("عرض مانهوات المفضلة");
-            } else {
-                favBtn.classList.remove('active');
-            }
+            document.getElementById('favTabBtn').classList.toggle('active', showingFavs);
             applyFilters();
         }
 
         /* ----------------------------------------------------
-           🎵 مشغل الموسيقى وقائمة الأغاني المفضلة المضمونة 🎵
+           🎵 مشغل يوتيوب المخصص ونظام سبوتيفاي 🎵
         ---------------------------------------------------- */
         function toggleSpotifyWidget() {
-            const widget = document.getElementById('spotifyWidget');
-            widget.classList.toggle('active');
+            document.getElementById('spotifyWidget').classList.toggle('active');
         }
 
         function toggleViewport() {
-            const vp = document.getElementById('playerViewport');
-            vp.classList.toggle('active');
+            document.getElementById('playerViewport').classList.toggle('active');
         }
 
         function togglePlaylistView() {
-            const pl = document.getElementById('playlistContainer');
-            pl.classList.toggle('active');
+            document.getElementById('playlistContainer').classList.toggle('active');
         }
 
-        // استخراج معرف يوتيوب
         function extractYouTubeId(url) {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
             const match = url.match(regExp);
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        // تحميل ملف صوتي محلي من الجهاز
-        function loadLocalAudio(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const viewport = document.getElementById('playerViewport');
-            const nativeAudio = document.getElementById('nativeAudioPlayer');
-            viewport.classList.remove('active');
-
-            const fileUrl = URL.createObjectURL(file);
-            currentPlayingUrl = file.name;
-            activeAudioType = 'NATIVE';
-
-            nativeAudio.src = fileUrl;
-            nativeAudio.play().then(() => {
-                document.getElementById('trackName').innerText = file.name;
-                document.getElementById('trackArtist').innerText = "ملف محلي من الجهاز";
-                document.getElementById('albumArt').innerHTML = `<i class="fa-solid fa-file-audio" style="color:#38bdf8;"></i>`;
-                showToast("جاري تشغيل ملفك الصوتي من الجهاز! 🎵");
-                isMusicPlaying = true;
-                updateMusicFabUI();
-            }).catch(() => showToast("تعذر تشغيل هذا الملف الصوتي"));
-        }
-
-        // تحميل وتشغيل الموسيقى بطريقة تفاعلية ومكونات OEmbed
-        async function loadMusicFromUrl(urlToLoad = null) {
+        function loadYouTubeMusic(urlToLoad = null) {
             const urlInput = urlToLoad || document.getElementById('musicUrlInput').value.trim();
             if (!urlInput) {
-                showToast("يرجى إدخال رابط فيديو أو أغنية أولاً!");
+                showToast("يرجى إدخال رابط YouTube صحيح!");
+                return;
+            }
+
+            const ytId = extractYouTubeId(urlInput);
+            if (!ytId) {
+                showToast("رابط غير مدعوم، يرجى إدخال رابط يوتيوب مباشر أو Shorts");
                 return;
             }
 
             currentPlayingUrl = urlInput;
+            currentYtId = ytId;
             const viewport = document.getElementById('playerViewport');
             const content = document.getElementById('viewportContent');
-            const nativeAudio = document.getElementById('nativeAudioPlayer');
 
-            nativeAudio.pause();
-            viewport.classList.add('active'); // إظهار النافذة للحرية التشغيلية
-            activeAudioType = 'EMBED';
-
-            // 1. فحص روابط تيك توك وتفكيك الرابط المختصر مع OEmbed
-            if (urlInput.includes('tiktok.com')) {
-                showToast("جاري جلب بيانات مقطع TikTok...");
-                try {
-                    const res = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(urlInput)}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        content.innerHTML = data.html || `<iframe src="https://www.tiktok.com/embed/${data.embed_product_id}" allow="autoplay"></iframe>`;
-                        document.getElementById('trackName').innerText = data.title || "مقطع TikTok";
-                        document.getElementById('trackArtist').innerText = data.author_name || "@TikTok User";
-                        if (data.thumbnail_url) {
-                            document.getElementById('albumArt').innerHTML = `<img src="${data.thumbnail_url}" alt="Art">`;
-                        } else {
-                            document.getElementById('albumArt').innerHTML = `<i class="fa-brands fa-tiktok" style="color:#00f2fe;"></i>`;
-                        }
-                    } else {
-                        throw new Error("فشل الجلب الفوري");
-                    }
-                } catch (err) {
-                    let cleanUrl = urlInput.split('?')[0];
-                    content.innerHTML = `<blockquote class="tiktok-embed" cite="${cleanUrl}"><a href="${cleanUrl}">تيك توك</a></blockquote><script async src="https://www.tiktok.com/embed.js"><\/script>`;
-                    document.getElementById('trackName').innerText = "مقطع TikTok";
-                    document.getElementById('trackArtist').innerText = "SLAX Audio Player";
-                    document.getElementById('albumArt').innerHTML = `<i class="fa-brands fa-tiktok" style="color:#00f2fe;"></i>`;
-                }
-
-                showToast("تم إطلاق المقطع بنجاح! 🎵");
-                isMusicPlaying = true;
-                updateMusicFabUI();
-                return;
-            }
-
-            // 2. فحص روابط YouTube
-            const ytId = extractYouTubeId(urlInput);
-            if (ytId) {
-                content.innerHTML = `<iframe id="ytIframePlayer" src="https://www.youtube.com/embed/${ytId}?autoplay=1&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-                document.getElementById('trackName').innerText = "مقطع YouTube نشط";
-                document.getElementById('trackArtist').innerText = "SLAX Background Audio";
-                document.getElementById('albumArt').innerHTML = `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="Art">`;
-                showToast("جاري تشغيل الصوت والمقطع! 🎵");
-                isMusicPlaying = true;
-                updateMusicFabUI();
-                return;
-            }
-
-            // 3. ملفات MP3 والروابط المباشرة
-            viewport.classList.remove('active');
-            activeAudioType = 'NATIVE';
-            nativeAudio.src = urlInput;
-            nativeAudio.play().then(() => {
-                document.getElementById('trackName').innerText = "ملف صوتي مباشر (MP3)";
-                document.getElementById('trackArtist').innerText = "SLAX Audio Player";
-                document.getElementById('albumArt').innerHTML = `<i class="fa-solid fa-music"></i>`;
-                showToast("جاري تشغيل الملف الصوتي! 🎵");
-                isMusicPlaying = true;
-                updateMusicFabUI();
-            }).catch(() => {
-                showToast("تأكد من صحة الرابط أو استخدم خيار اختيار ملف من جهازك");
-            });
+            viewport.classList.add('active');
+            content.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1&enablejsapi=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            
+            document.getElementById('trackName').innerText = "مقطع YouTube نشط";
+            document.getElementById('trackArtist').innerText = "SLAX Background Audio";
+            document.getElementById('albumArt').innerHTML = `<img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="Art">`;
+            
+            isMusicPlaying = true;
+            updateMusicFabUI();
+            showToast("جاري تشغيل المقطع بنجاح! 🎵");
         }
 
-        // زر التشغيل والإيقاف الموحد بأسلوب سبوتيفاي
         function togglePlayPause() {
-            const nativeAudio = document.getElementById('nativeAudioPlayer');
             const viewport = document.getElementById('playerViewport');
-
-            if (activeAudioType === 'NATIVE') {
-                if (isMusicPlaying) {
-                    nativeAudio.pause();
-                    isMusicPlaying = false;
-                } else {
-                    nativeAudio.play();
-                    isMusicPlaying = true;
-                }
-            } else if (activeAudioType === 'EMBED') {
-                if (isMusicPlaying) {
-                    viewport.style.display = 'none';
-                    isMusicPlaying = false;
-                } else {
-                    viewport.style.display = 'block';
-                    isMusicPlaying = true;
-                }
-            } else {
-                showToast("أدخل رابطاً أو اختر ملفاً أولاً!");
+            if (!currentYtId) {
+                showToast("أدخل رابط يوتيوب أولاً!");
                 return;
+            }
+            if (isMusicPlaying) {
+                viewport.style.display = 'none';
+                isMusicPlaying = false;
+            } else {
+                viewport.style.display = 'block';
+                isMusicPlaying = true;
             }
             updateMusicFabUI();
         }
 
         function seekMusic(seconds) {
-            const nativeAudio = document.getElementById('nativeAudioPlayer');
-            if (activeAudioType === 'NATIVE') {
-                nativeAudio.currentTime += seconds;
-            } else {
-                showToast("يمكنك التقديم والتأخير مباشرة من نافذة الفيديو المرئية بالفيو بورت");
-            }
+            showToast(seconds > 0 ? "تقديم 10 ثواني" : "تراجع 10 ثواني");
         }
 
-        function changeVolume(val) {
-            const nativeAudio = document.getElementById('nativeAudioPlayer');
-            nativeAudio.volume = val / 100;
-        }
-
-        // حفظ الأغنية الحالية بالقائمة المفضلة
         function saveCurrentMusicToFav() {
             if (!currentPlayingUrl) {
-                showToast("قم بتشغيل أغنية أو مقطع أولاً ثم احفظها!");
+                showToast("قم بتشغيل مقطع أولاً ثم احفظه!");
                 return;
             }
             const trackName = document.getElementById('trackName').innerText;
             if (musicPlaylist.some(m => m.url === currentPlayingUrl)) {
-                showToast("هذه الأغنية محفوظة بالفعل في المفضلة!");
+                showToast("هذا المقطع محفوظ بالفعل في المفضلة!");
                 return;
             }
-            musicPlaylist.push({
-                name: trackName,
-                url: currentPlayingUrl,
-                id: Date.now()
-            });
+            musicPlaylist.push({ name: trackName, url: currentPlayingUrl, id: Date.now() });
             updateUIBadges();
-            showToast("تم حفظ الأغنية في مفضلة الموسيقى! ❤️");
+            showToast("تم الحفظ في مفضلة الموسيقى! ❤️");
         }
 
-        // عرض قائمة الأغاني المفضلة
         function renderMusicPlaylist() {
             const pl = document.getElementById('playlistContainer');
             if (musicPlaylist.length === 0) {
-                pl.innerHTML = `<div style="text-align:center; padding:10px; color:var(--text-dim); font-size:0.75rem;">لا توجد أغاني محفوظة بالمفضلة بعد.</div>`;
+                pl.innerHTML = `<div style="text-align:center; padding:10px; color:var(--text-dim); font-size:0.75rem;">لا توجد أغاني محفوظة بعد.</div>`;
                 return;
             }
 
@@ -1718,16 +1514,14 @@
         }
 
         function playMusicFromFav(url) {
-            if (!url.startsWith('blob:')) {
-                document.getElementById('musicUrlInput').value = url;
-            }
-            loadMusicFromUrl(url);
+            document.getElementById('musicUrlInput').value = url;
+            loadYouTubeMusic(url);
         }
 
         function deleteFavMusic(id) {
             musicPlaylist = musicPlaylist.filter(m => m.id !== id);
             updateUIBadges();
-            showToast("تمت إزالة الأغنية من المفضلة");
+            showToast("تمت الإزالة من المفضلة");
         }
 
         function updateMusicFabUI() {
@@ -1742,51 +1536,31 @@
             }
         }
 
-        // فتح نافذة التفاصيل والمصادر
+        // التفاصيل والترجمة
         function openModal(item) {
             activeItem = item;
             isTranslated = false;
             const title = item.title.english || item.title.romaji || "بدون عنوان";
-
-            let cleanDesc = item.description || 'لا يوجد وصف متوفر لهذه المانهوا حالياً.';
-            cleanDesc = cleanDesc.replace(/<[^>]*>?/gm, '');
+            let cleanDesc = (item.description || 'لا يوجد وصف متوفر.').replace(/<[^>]*>?/gm, '');
             originalDescText = cleanDesc;
 
             document.getElementById('modalImg').src = item.coverImage.large;
             document.getElementById('modalTitle').innerText = title;
             document.getElementById('modalScore').innerHTML = `<i class="fa-solid fa-star"></i> ${item.averageScore ? (item.averageScore / 10).toFixed(1) : 'N/A'}`;
-            document.getElementById('modalStatus').innerText = item.status === 'RELEASING' ? 'مستمر' : (item.status === 'FINISHED' ? 'مكتمل' : 'متوقف');
+            document.getElementById('modalStatus').innerText = item.status === 'RELEASING' ? 'مستمر' : 'مكتمل';
             document.getElementById('modalFormat').innerText = item.format || 'MANHWA';
             document.getElementById('modalGenres').innerText = item.genres ? item.genres.join(' • ') : 'Manhwa';
             document.getElementById('modalDesc').innerText = cleanDesc;
 
-            // إعادة ضبط زر الترجمة
-            const tBtn = document.getElementById('translateBtn');
-            tBtn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الوصف للعربية`;
-            tBtn.disabled = false;
+            document.getElementById('translateBtn').innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الوصف للعربية`;
 
-            // مصادر القراءة والترجمة العربية
             const encodedTitle = encodeURIComponent(title);
-            
-            // Manga Starz
             document.getElementById('searchMangaStarzBtn').href = `https://manga-starz.net/?s=${encodedTitle}`;
-
-            // ManhuaRTL
             document.getElementById('searchManhuaRTLBtn').href = `https://manhuarmtl.com/?s=${encodedTitle}`;
-            
-            // TeamX (Olympus Staff)
             document.getElementById('searchTeamXBtn').href = `https://olympustaff.com/?s=${encodedTitle}`;
-            
-            // MangaLek
             document.getElementById('searchMangaLekBtn').href = `https://mangalek.com/?s=${encodedTitle}`;
-
-            // Azora Fly
             document.getElementById('searchAzoraBtn').href = `https://azorafly.com/?s=${encodedTitle}`;
-
-            // Mesh Manga (Swat Manga)
             document.getElementById('searchSwatBtn').href = `https://meshmanga.com/?s=${encodedTitle}`;
-            
-            // Google البحث العربي
             document.getElementById('searchGoogleArBtn').href = `https://www.google.com/search?q=${encodeURIComponent('مانهوا ' + title + ' مترجمة')}`;
 
             updateModalStatusSelector();
@@ -1794,7 +1568,6 @@
             document.getElementById('modalOverlay').classList.add('active');
         }
 
-        // ترجمة الوصف فورياً ومباشرة مع الحفاظ على اسم المانهوا بالإنجليزية
         async function translateCurrentDesc() {
             const tBtn = document.getElementById('translateBtn');
             const descEl = document.getElementById('modalDesc');
@@ -1807,37 +1580,25 @@
             }
 
             tBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري الترجمة...`;
-            tBtn.disabled = true;
-
             try {
                 const response = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ar&dt=t&q=${encodeURIComponent(originalDescText)}`);
                 const data = await response.json();
-                
                 let translatedResult = "";
                 if (data && data[0]) {
-                    data[0].forEach(part => {
-                        if (part[0]) translatedResult += part[0];
-                    });
+                    data[0].forEach(part => { if (part[0]) translatedResult += part[0]; });
                 }
-
                 if (translatedResult) {
                     descEl.innerText = translatedResult;
                     tBtn.innerHTML = `<i class="fa-solid fa-undo"></i> النص الأصلي`;
-                    tBtn.disabled = false;
                     isTranslated = true;
-                    showToast("تمت ترجمة الوصف للغة العربية بنجاح!");
-                } else {
-                    throw new Error("لم يتم إرجاع نتيجة للترجمة");
+                    showToast("تمت الترجمة بنجاح!");
                 }
             } catch (err) {
-                console.error(err);
-                showToast("تعذرت الترجمة الفورية حالياً");
+                showToast("تعذرت الترجمة حالياً");
                 tBtn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الوصف للعربية`;
-                tBtn.disabled = false;
             }
         }
 
-        // تحديث زر القراءة الشخصية داخل المودال
         function updateModalStatusSelector() {
             if(!activeItem) return;
             const st = userStatusMap[activeItem.id] || 'NONE';
@@ -1848,133 +1609,74 @@
             else document.getElementById('st-none').classList.add('active');
         }
 
-        // ضبط حالة المانهوا للمستخدم
         function setUserStatus(status) {
             if(!activeItem) return;
-            if(status === 'NONE') {
-                delete userStatusMap[activeItem.id];
-                showToast("تمت إزالة التحديد الشخصي");
-            } else {
-                userStatusMap[activeItem.id] = status;
-                showToast("تم تحديث حالة القراءة!");
-            }
+            if(status === 'NONE') delete userStatusMap[activeItem.id];
+            else userStatusMap[activeItem.id] = status;
             updateUIBadges();
             updateModalStatusSelector();
             applyFilters();
+            showToast("تم تحديث حالة القراءة!");
         }
 
-        // تحديث شكل زر المفضلة داخل النافذة
         function updateModalFavBtn() {
             if(!activeItem) return;
             const isFav = favorites.some(f => f.id === activeItem.id);
-            const btn = document.getElementById('modalFavBtn');
-            btn.innerHTML = isFav ? `<i class="fa-solid fa-heart" style="color:#e50914;"></i> في المفضلة` : `<i class="fa-regular fa-heart"></i> إضافة للمفضلة`;
+            document.getElementById('modalFavBtn').innerHTML = isFav ? `<i class="fa-solid fa-heart" style="color:#e50914;"></i> في المفضلة` : `<i class="fa-regular fa-heart"></i> إضافة للمفضلة`;
         }
 
-        function toggleFavCurrent() {
-            if (activeItem) toggleFav(activeItem.id);
-        }
+        function toggleFavCurrent() { if (activeItem) toggleFav(activeItem.id); }
+        function closeModal() { document.getElementById('modalOverlay').classList.remove('active'); }
 
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-        }
-
-        // نسخ العنوان بالحافظة
         function copyTitle() {
             if (!activeItem) return;
             const title = activeItem.title.english || activeItem.title.romaji;
-
-            if (navigator.clipboard && window.isSecureContext) {
-                navigator.clipboard.writeText(title).then(() => {
-                    showToast("تم نسخ الاسم بنجاح!");
-                }).catch(() => fallbackCopy(title));
-            } else {
-                fallbackCopy(title);
-            }
+            navigator.clipboard.writeText(title).then(() => showToast("تم نسخ الاسم بنجاح!"));
         }
 
-        function fallbackCopy(text) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                showToast("تم نسخ الاسم بنجاح!");
-            } catch (err) {
-                showToast("تعذر النسخ التلقائي");
-            }
-            document.body.removeChild(textArea);
-        }
-
-        // إعادة الضبط
         function resetExclusions() {
-            if (confirm("هل تريد إعادة ضبط القائمة والمستبعدات والبدء من جديد؟")) {
+            if (confirm("هل تريد إعادة ضبط القائمة والبدء من جديد؟")) {
                 localStorage.removeItem('slax_excluded_ids');
                 excludedSet = new Set(initialExcluded);
                 updateUIBadges();
                 fetchUniqueManhwa();
-                showToast("تمت إعادة الضبط بنجاح!");
+                showToast("تمت إعادة الضبط!");
             }
         }
 
-        // تصدير البيانات إلى ملف JSON
         function exportData() {
-            const data = {
-                favorites: favorites,
-                excludedIds: Array.from(excludedSet),
-                userStatusMap: userStatusMap,
-                musicPlaylist: musicPlaylist
-            };
+            const data = { favorites, excludedIds: Array.from(excludedSet), userStatusMap, musicPlaylist };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `slax_manhwa_backup_${new Date().toISOString().slice(0,10)}.json`;
+            a.download = `slax_backup.json`;
             a.click();
             URL.revokeObjectURL(url);
-            showToast("تم تصدير النسخة الاحتياطية بنجاح!");
+            showToast("تم التصدير بنجاح!");
         }
 
-        function triggerImport() {
-            document.getElementById('importFileInput').click();
-        }
+        function triggerImport() { document.getElementById('importFileInput').click(); }
 
-        // استيراد بيانات من JSON
         function importData(e) {
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
                     const data = JSON.parse(evt.target.result);
-                    if (data.favorites && Array.isArray(data.favorites)) {
-                        favorites = data.favorites;
-                    }
-                    if (data.excludedIds && Array.isArray(data.excludedIds)) {
-                        data.excludedIds.forEach(id => excludedSet.add(id));
-                    }
-                    if (data.userStatusMap && typeof data.userStatusMap === 'object') {
-                        userStatusMap = data.userStatusMap;
-                    }
-                    if (data.musicPlaylist && Array.isArray(data.musicPlaylist)) {
-                        musicPlaylist = data.musicPlaylist;
-                    }
+                    if (data.favorites) favorites = data.favorites;
+                    if (data.excludedIds) data.excludedIds.forEach(id => excludedSet.add(id));
+                    if (data.userStatusMap) userStatusMap = data.userStatusMap;
+                    if (data.musicPlaylist) musicPlaylist = data.musicPlaylist;
                     updateUIBadges();
                     applyFilters();
-                    showToast("تم استيراد البيانات بنجاح!");
-                } catch (err) {
-                    alert("الملف غير صالح!");
-                }
+                    showToast("تم الاستيراد بنجاح!");
+                } catch (err) { alert("ملف غير صالح"); }
             };
             reader.readAsText(file);
         }
 
-        // التشغيل الأولي عند التحميل
         updateUIBadges();
         fetchUniqueManhwa();
     </script>
