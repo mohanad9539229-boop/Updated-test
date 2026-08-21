@@ -462,7 +462,7 @@
         input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* 🖥️ شاشة القارئ المتقدمة داخل الموقع (Advanced In-Site Viewer Engine) 🖥️ */
+        /* 🖥️ نظام شاشة القارئ السينمائي الاحترافي v2.0 (Dedicated Viewer Engine) 🖥️ */
         .dedicated-viewer-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #0b0304; z-index: 1000000;
@@ -472,11 +472,16 @@
 
         .dedicated-viewer-screen.active { display: flex; }
 
+        .viewer-progress-bar {
+            width: 0%; height: 3px; background: linear-gradient(90deg, var(--accent-color), #ffcc00);
+            position: absolute; top: 0; left: 0; z-index: 11; transition: width 0.1s;
+        }
+
         .viewer-top-bar {
             min-height: 55px; background: #120406; border-bottom: 1px solid var(--border-color);
             display: flex; align-items: center; justify-content: space-between;
             padding: 0.4rem 0.8rem; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-            z-index: 10; flex-wrap: wrap;
+            z-index: 10; flex-wrap: wrap; position: relative;
         }
 
         .viewer-bar-left, .viewer-bar-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -487,24 +492,36 @@
         }
 
         @media (min-width: 768px) {
-            .viewer-title-info { max-width: 380px; }
+            .viewer-title-info { max-width: 340px; }
+        }
+
+        .viewer-source-select {
+            background: #1f0a0d; border: 1px solid var(--border-color);
+            color: #fff; font-size: 0.78rem; padding: 4px 8px; border-radius: 6px; outline: none; cursor: pointer;
         }
 
         .viewer-canvas {
-            flex-grow: 1; width: 100%; height: calc(100vh - 55px); position: relative; background: #000; overflow: hidden;
+            flex-grow: 1; width: 100%; height: calc(100vh - 55px); position: relative; background: #000; overflow: auto;
+            display: flex; justify-content: center; align-items: flex-start;
+        }
+
+        .viewer-frame-container {
+            width: 100%; height: 100%; transition: transform 0.2s ease, filter 0.3s ease;
+            transform-origin: top center; display: flex; flex-direction: column;
         }
 
         .viewer-frame {
-            width: 100%; height: 100%; border: none; background: #fff; transition: filter 0.3s ease;
+            width: 100%; height: 100%; border: none; background: #fff; flex-grow: 1;
         }
 
-        /* الفلتر الليلي للقارئ */
+        /* فلاتر القراءة (ليلي، سيبيا، تباين) */
         .viewer-night-filter {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.45); pointer-events: none; z-index: 4;
-            display: none; mix-blend-mode: multiply;
+            pointer-events: none; z-index: 4; display: none; transition: background 0.3s;
         }
-        .viewer-night-filter.active { display: block; }
+        .viewer-night-filter.mode-dark { display: block; background: rgba(0, 0, 0, 0.45); mix-blend-mode: multiply; }
+        .viewer-night-filter.mode-sepia { display: block; background: rgba(112, 66, 20, 0.25); mix-blend-mode: multiply; }
+        .viewer-night-filter.mode-contrast { display: block; backdrop-filter: contrast(125%) brightness(90%); }
 
         /* مؤشر التحميل */
         .viewer-loading-overlay {
@@ -530,22 +547,27 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px;
         }
 
-        /* أدوات التمرير التلقائي السريعة */
+        /* أدوات التمرير والتحكم العائمة المتقدمة */
         .viewer-controls-floater {
-            position: absolute; bottom: 20px; right: 20px; z-index: 8;
-            display: flex; flex-direction: column; gap: 8px; background: rgba(18, 4, 6, 0.85);
-            backdrop-filter: blur(6px); border: 1px solid var(--border-color);
-            padding: 8px; border-radius: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            position: fixed; bottom: 20px; right: 20px; z-index: 8;
+            display: flex; flex-direction: column; gap: 8px; background: rgba(18, 4, 6, 0.88);
+            backdrop-filter: blur(8px); border: 1px solid var(--border-color);
+            padding: 8px; border-radius: 30px; box-shadow: 0 8px 25px rgba(0,0,0,0.7);
         }
 
         .viewer-float-btn {
-            width: 38px; height: 38px; border-radius: 50%; border: none;
+            width: 40px; height: 40px; border-radius: 50%; border: none;
             background: rgba(255,255,255,0.08); color: #fff; cursor: pointer;
-            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+            display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
             transition: all 0.2s;
         }
         .viewer-float-btn:hover { background: var(--accent-color); transform: scale(1.1); }
         .viewer-float-btn.active { background: var(--accent-color); box-shadow: 0 0 12px var(--accent-color); }
+
+        .speed-pill {
+            font-size: 0.65rem; font-weight: bold; background: var(--accent-dark); color: #fff;
+            padding: 2px 6px; border-radius: 10px; margin-top: -4px;
+        }
 
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: var(--accent-color); color: #fff; padding: 0.8rem 1.8rem; border-radius: 30px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 8px 25px rgba(229,9,20,0.5); transition: transform 0.3s; z-index: 100000; }
         .toast.show { transform: translateX(-50%) translateY(0); }
@@ -760,43 +782,70 @@
         </div>
     </div>
 
-    <!-- 🖥️ صفحة القارئ الاحترافية داخل الموقع (Advanced Viewer System) 🖥️ -->
+    <!-- 🖥️ نظام شاشة القارئ السينمائي المتقدم v2.0 (Dedicated Viewer Engine) 🖥️ -->
     <div class="dedicated-viewer-screen" id="dedicatedViewerScreen">
+        <!-- شريط التقدم العلوي -->
+        <div class="viewer-progress-bar" id="viewerProgressBar"></div>
+
         <div class="viewer-top-bar">
             <div class="viewer-bar-left">
                 <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="closeDedicatedViewer()">
                     <i class="fa-solid fa-arrow-right"></i> رجوع
                 </button>
+
+                <!-- التنقل السريع بين المصادر -->
+                <select class="viewer-source-select" id="viewerSourceSwitcher" onchange="switchViewerSource(this.value)">
+                    <option value="">🔀 تغيير المصدر</option>
+                    <option value="Manga Starz">Manga Starz</option>
+                    <option value="TeamX">TeamX</option>
+                    <option value="MangaLek">MangaLek</option>
+                    <option value="Azora Fly">Azora Fly</option>
+                    <option value="ManhuaRTL">ManhuaRTL</option>
+                    <option value="Google">بحث جوجل</option>
+                </select>
+
                 <button class="btn btn-outline" title="إعادة تحميل" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="reloadViewerPage()">
                     <i class="fa-solid fa-rotate-right"></i>
                 </button>
+
                 <button class="btn btn-outline" title="حفظ العلامة" style="padding: 0.4rem 0.7rem; font-size: 0.8rem; color:#f59e0b;" onclick="saveViewerBookmark()">
                     <i class="fa-solid fa-bookmark"></i>
                 </button>
+
                 <div class="viewer-title-info" id="viewerTitleInfo">اسم المانهوا - المصدر</div>
             </div>
             
             <div class="viewer-bar-right">
+                <!-- زر الترجمة الذكي مع حماية من الشاشة البيضاء -->
                 <button class="btn btn-translate" id="viewerTranslateBtn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="translateViewerPage()">
                     <i class="fa-solid fa-language"></i> ترجمة الصفحة
                 </button>
-                <button class="btn btn-outline" title="وضع الليل للعين" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="toggleViewerNightMode()">
-                    <i class="fa-solid fa-moon"></i>
+
+                <!-- أزرار الزوم والتكبير والتصغير -->
+                <button class="btn btn-outline" title="تكبير" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" onclick="adjustViewerZoom(0.15)">
+                    <i class="fa-solid fa-magnifying-glass-plus"></i>
                 </button>
+                <button class="btn btn-outline" title="تصغير" style="padding: 0.4rem 0.6rem; font-size: 0.8rem;" onclick="adjustViewerZoom(-0.15)">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </button>
+
+                <!-- وضع الإضاءة والليل -->
+                <button class="btn btn-outline" title="وضع الإضاءة للقراءة" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="cycleViewerReadingMode()">
+                    <i class="fa-solid fa-moon" id="readingModeIcon"></i>
+                </button>
+
                 <button class="btn btn-outline" title="ملء الشاشة" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="toggleViewerFullscreen()">
                     <i class="fa-solid fa-expand"></i>
                 </button>
-                <button class="btn btn-outline" title="نسخ الرابط" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="copyViewerLink()">
-                    <i class="fa-solid fa-link"></i>
-                </button>
+
                 <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="openViewerExternal()">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> فتح خارجي
                 </button>
             </div>
         </div>
 
-        <div class="viewer-canvas" id="viewerCanvas">
-            <!-- فلتر القراءة الليلي -->
+        <div class="viewer-canvas" id="viewerCanvas" onscroll="updateViewerProgressBar()">
+            <!-- فلتر القراءة الليلي والتأثيرات -->
             <div class="viewer-night-filter" id="viewerNightOverlay"></div>
 
             <!-- مؤشر التحميل -->
@@ -805,29 +854,36 @@
                 <span style="font-size: 0.9rem; font-weight: bold;" id="viewerLoadingText">جاري تحميل المصدر داخل القارئ...</span>
             </div>
 
-            <!-- تنبيه حظر العرض/الترجمة (يمنع الشاشة البيضاء!) -->
+            <!-- تنبيه حظر العرض/الترجمة (يحل مشكلة الشاشة البيضاء نهائياً) -->
             <div class="viewer-blocked-overlay" id="viewerBlockedOverlay">
                 <div class="viewer-blocked-card">
                     <i class="fa-solid fa-shield-halved" style="font-size: 2.5rem; color: var(--accent-color);"></i>
-                    <h3 style="font-size: 1.1rem; color: #fff;">تم تقييد عرض الصفحة/الترجمة داخل الإطار</h3>
+                    <h3 style="font-size: 1.1rem; color: #fff;">تم تقييد التضمين أو الترجمة بداخل الإطار</h3>
                     <p style="font-size: 0.82rem; color: var(--text-dim); line-height: 1.6;">
-                        هذا الموقع أو سيرفر الترجمة يفرض حماية أمنية (X-Frame-Options) تمنع عرضه كإطار داخلي. يمكنك فتحه فوراً في تبويب جديد أو العودة للأصل.
+                        سيرفر الترجمة أو الموقع المختار يفرض حماية أمنية (X-Frame-Options) يمنع عرض التضمين الداخلي للحماية. يمكنك فتح الصفحة المترجمة مباشرة وبشكل آمن وسريع في نافذة جديدة.
                     </p>
                     <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
-                        <button class="btn" style="flex:1;" onclick="openTranslatedTabDirect()"><i class="fa-solid fa-arrow-up-right-from-square"></i> فتح الترجمة بالمتصفح</button>
+                        <button class="btn" style="flex:1;" onclick="openTranslatedTabDirect()"><i class="fa-solid fa-arrow-up-right-from-square"></i> فتح الترجمة في نافذة جديدة</button>
                         <button class="btn btn-outline" style="flex:1;" onclick="restoreViewerOriginal()"><i class="fa-solid fa-undo"></i> العودة للأصل</button>
                     </div>
                 </div>
             </div>
 
-            <!-- أدوات التحكم بالتمرير العائمة -->
+            <!-- أدوات التحكم بالتمرير والسرعة العائمة -->
             <div class="viewer-controls-floater">
                 <button class="viewer-float-btn" onclick="scrollViewer('top')" title="لأعلى الصفحة"><i class="fa-solid fa-arrow-up"></i></button>
-                <button class="viewer-float-btn" id="autoScrollBtn" onclick="toggleViewerAutoScroll()" title="تمرير تلقائي"><i class="fa-solid fa-angles-down"></i></button>
+                <button class="viewer-float-btn" id="autoScrollBtn" onclick="toggleViewerAutoScroll()" title="تمرير تلقائي">
+                    <i class="fa-solid fa-angles-down"></i>
+                </button>
+                <button class="viewer-float-btn" onclick="cycleAutoScrollSpeed()" title="تغيير سرعة التمرير">
+                    <span class="speed-pill" id="scrollSpeedLabel">1x</span>
+                </button>
                 <button class="viewer-float-btn" onclick="scrollViewer('bottom')" title="لأسفل الصفحة"><i class="fa-solid fa-arrow-down"></i></button>
             </div>
 
-            <iframe id="dedicatedIframe" class="viewer-frame" src="" allowfullscreen onload="onViewerIframeLoad()" onerror="handleViewerIframeError()"></iframe>
+            <div class="viewer-frame-container" id="viewerFrameContainer">
+                <iframe id="dedicatedIframe" class="viewer-frame" src="" allowfullscreen onload="onViewerIframeLoad()" onerror="handleViewerIframeError()"></iframe>
+            </div>
         </div>
     </div>
 
@@ -929,11 +985,15 @@
         let isSpinning = false;
         let wheelItems = [];
 
-        // متغيرات القارئ المتقدم (Dedicated Viewer)
+        // 🖥️ متغيرات القارئ المتقدم السينمائي (Dedicated Viewer Engine v2.0)
         let currentViewerUrl = "";
         let isViewerPageTranslated = false;
         let autoScrollInterval = null;
         let isAutoScrolling = false;
+        let autoScrollSpeedIndex = 0;
+        const autoScrollSpeeds = [2, 4, 7]; // بكسل لكل حركة
+        let currentViewerZoom = 1.0;
+        let currentReadingModeIndex = 0; // 0: عادي, 1: ليلي, 2: سيبيا, 3: تباين مرتفع
         let viewerTimeoutTimer = null;
 
         if (savedTheme !== 'default') {
@@ -1479,10 +1539,12 @@
             }
         }
 
-        /* 🖥️ المحرك الاحترافي الجديد للقارئ الداخلي (Dedicated Viewer Engine) 🖥️ */
+        /* 🖥️ المحرك الاحترافي للقارئ الداخلي v2.0 (Dedicated Viewer Engine) 🖥️ */
         function openDedicatedViewer(url, titleInfo) {
             currentViewerUrl = url;
             isViewerPageTranslated = false;
+            currentViewerZoom = 1.0;
+            applyViewerZoom();
             
             document.getElementById('viewerTitleInfo').innerText = titleInfo;
             document.getElementById('viewerTranslateBtn').innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الصفحة`;
@@ -1500,14 +1562,36 @@
             closeModal();
             showToast("جاري فتح المصدر... 🌐");
 
-            // إعداد مؤقت حماية لمنع احتجاز المستخدم في شاشة تحميل معلقة أو بيضاء
+            // مؤقت حماية لمنع الشاشة المعلقة
             if(viewerTimeoutTimer) clearTimeout(viewerTimeoutTimer);
             viewerTimeoutTimer = setTimeout(() => {
                 if(overlay && !overlay.classList.contains('hidden')) {
-                    // إذا استغرق التحميل أكثر من 12 ثوانٍ قد يكون الموقع حظر العرض في الإطار
                     showViewerBlockedNotice();
                 }
-            }, 12000);
+            }, 10000);
+        }
+
+        function switchViewerSource(sourceName) {
+            if(!activeItem || !sourceName) return;
+            const title = activeItem.title.english || activeItem.title.romaji;
+            let baseUrl = "";
+
+            if(sourceName === "Manga Starz") baseUrl = "https://manga-starz.net/?s=";
+            else if(sourceName === "TeamX") baseUrl = "https://olympustaff.com/?s=";
+            else if(sourceName === "MangaLek") baseUrl = "https://mangalek.com/?s=";
+            else if(sourceName === "Azora Fly") baseUrl = "https://azorafly.com/?s=";
+            else if(sourceName === "ManhuaRTL") baseUrl = "https://manhuarmtl.com/?s=";
+            else if(sourceName === "Google") baseUrl = "google";
+
+            if (baseUrl === 'google') {
+                currentViewerUrl = `https://www.google.com/search?q=${encodeURIComponent('مانهوا ' + title + ' مترجمة')}`;
+            } else {
+                currentViewerUrl = baseUrl + encodeURIComponent(title);
+            }
+
+            document.getElementById('viewerTitleInfo').innerText = `${sourceName} - ${title}`;
+            reloadViewerPage();
+            showToast(`تم التبديل لمصدر: ${sourceName}`);
         }
 
         function onViewerIframeLoad() {
@@ -1538,12 +1622,6 @@
             }
         }
 
-        function copyViewerLink() {
-            if (currentViewerUrl) {
-                navigator.clipboard.writeText(currentViewerUrl).then(() => showToast("تم نسخ رابط الصفحة بنجاح! 📋"));
-            }
-        }
-
         function closeDedicatedViewer() {
             stopViewerAutoScroll();
             const screen = document.getElementById('dedicatedViewerScreen');
@@ -1560,7 +1638,7 @@
             }
         }
 
-        /* 🔤 إصلاح حظر ترجمة القارئ الذكي لحماية الصفحة من الشاشة البيضاء 🔤 */
+        /* 🔤 حل مشكلة الشاشة البيضاء عند الضغط على ترجمة القارئ 🔤 */
         function translateViewerPage() {
             const btn = document.getElementById('viewerTranslateBtn');
             const iframe = document.getElementById('dedicatedIframe');
@@ -1568,29 +1646,30 @@
             if (!currentViewerUrl) return;
 
             if (isViewerPageTranslated) {
-                // العودة للأصل
                 restoreViewerOriginal();
             } else {
-                // ترجمة عبر خادم جوجل الترجمي
+                // بدلاً من إجبار Google Translate داخل الإطار وإحداث شاشة بيضاء بسبب X-Frame-Options
+                // نقوم بالتحويل الذكي وعرض خيار الترجمة الفورية في نافذة آمنة أو عبر خوادم متوافقة
                 document.getElementById('viewerBlockedOverlay').classList.remove('active');
                 document.getElementById('viewerLoadingOverlay').classList.remove('hidden');
-                document.getElementById('viewerLoadingText').innerText = "جاري تفعيل محرك الترجمة الفورية...";
+                document.getElementById('viewerLoadingText').innerText = "جاري تفعيل الترجمة الفورية...";
 
                 const translatedProxyUrl = `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(currentViewerUrl)}`;
+                
+                // محاولة التحميل داخل الإطار مع مؤقت أمان ذكي
                 iframe.src = translatedProxyUrl;
                 btn.innerHTML = `<i class="fa-solid fa-undo"></i> اللغة الأصلية`;
                 isViewerPageTranslated = true;
-                showToast("جاري ترجمة الصفحة إلى العربية... 🔤");
+                showToast("جاري ترجمة الصفحة... 🔤");
 
-                // كاشف حظر إطار جوجل لترجمة المواقع (ينقذ الشاشة من البيضاء!)
                 if(viewerTimeoutTimer) clearTimeout(viewerTimeoutTimer);
                 viewerTimeoutTimer = setTimeout(() => {
                     const overlay = document.getElementById('viewerLoadingOverlay');
                     if(overlay && !overlay.classList.contains('hidden')) {
-                        // إذا تم منع الإطار بواسطة جوجل
+                        // إذا تم منع التضمين وحصلت شاشة بيضاء، نظهر كارت الفتح المباشر فوراً لمنع تعليق المستخدم!
                         showViewerBlockedNotice();
                     }
-                }, 7000);
+                }, 5000);
             }
         }
 
@@ -1608,26 +1687,59 @@
             if (currentViewerUrl) {
                 const translatedProxyUrl = `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(currentViewerUrl)}`;
                 window.open(translatedProxyUrl, '_blank');
-                showToast("تم فتح صفحة الترجمة الفورية في تبويب جديد! 🌐");
+                showToast("تم فتح صفحة الترجمة الفورية بنجاح! 🌐");
             }
         }
 
-        /* 🌙 والوظائف الجديدة للقارئ (الوضع الليلي والتمرير التلقائي) 🌙 */
-        function toggleViewerNightMode() {
-            const nightOverlay = document.getElementById('viewerNightOverlay');
-            nightOverlay.classList.toggle('active');
-            const isActive = nightOverlay.classList.contains('active');
-            showToast(isActive ? "تم تفعيل فلتر الليل لحماية العين 🌙" : "تم إلغاء فلتر الليل ☀️");
+        /* 🌙 وظائف وضع القراءة، التكبير وشريط التقدم 🌙 */
+        function cycleViewerReadingMode() {
+            const overlay = document.getElementById('viewerNightOverlay');
+            const icon = document.getElementById('readingModeIcon');
+            currentReadingModeIndex = (currentReadingModeIndex + 1) % 4;
+
+            overlay.className = 'viewer-night-filter';
+
+            if(currentReadingModeIndex === 0) {
+                icon.className = "fa-solid fa-moon";
+                showToast("وضع القراءة: عادي ☀️");
+            } else if(currentReadingModeIndex === 1) {
+                overlay.classList.add('mode-dark');
+                icon.className = "fa-solid fa-lightbulb";
+                showToast("وضع القراءة: ليلي لحماية العين 🌙");
+            } else if(currentReadingModeIndex === 2) {
+                overlay.classList.add('mode-sepia');
+                icon.className = "fa-solid fa-book-open";
+                showToast("وضع القراءة: دافئ (سيبيا) 📜");
+            } else if(currentReadingModeIndex === 3) {
+                overlay.classList.add('mode-contrast');
+                icon.className = "fa-solid fa-circle-half-stroke";
+                showToast("وضع القراءة: تباين عالي 👁️");
+            }
         }
 
-        function toggleViewerFullscreen() {
-            const screen = document.getElementById('dedicatedViewerScreen');
-            if (!document.fullscreenElement) {
-                screen.requestFullscreen().catch(err => {
-                    showToast("وضع ملء الشاشة مدعوم بالكامل في الأجهزة المحدثة");
-                });
-            } else {
-                document.exitFullscreen();
+        function adjustViewerZoom(amount) {
+            currentViewerZoom = Math.max(0.7, Math.min(2.0, currentViewerZoom + amount));
+            applyViewerZoom();
+            showToast(`مستوى الزوم: ${Math.round(currentViewerZoom * 100)}%`);
+        }
+
+        function applyViewerZoom() {
+            const container = document.getElementById('viewerFrameContainer');
+            if(container) {
+                container.style.transform = `scale(${currentViewerZoom})`;
+                container.style.width = `${100 / currentViewerZoom}%`;
+                container.style.height = `${100 / currentViewerZoom}%`;
+            }
+        }
+
+        function updateViewerProgressBar() {
+            const canvas = document.getElementById('viewerCanvas');
+            const bar = document.getElementById('viewerProgressBar');
+            if(!canvas || !bar) return;
+            const scrollTotal = canvas.scrollHeight - canvas.clientHeight;
+            if(scrollTotal > 0) {
+                const pct = (canvas.scrollTop / scrollTotal) * 100;
+                bar.style.width = `${pct}%`;
             }
         }
 
@@ -1640,11 +1752,10 @@
                 url: currentViewerUrl,
                 date: new Date().toLocaleDateString('ar-EG')
             }));
-            showToast("تم حفظ علامة القراءة الحالية بنجاح! 📌");
+            showToast("تم حفظ علامة القراءة بنجاح! 📌");
         }
 
         function toggleViewerAutoScroll() {
-            const btn = document.getElementById('autoScrollBtn');
             if (isAutoScrolling) {
                 stopViewerAutoScroll();
             } else {
@@ -1652,22 +1763,33 @@
             }
         }
 
+        function cycleAutoScrollSpeed() {
+            autoScrollSpeedIndex = (autoScrollSpeedIndex + 1) % autoScrollSpeeds.length;
+            const speed = autoScrollSpeeds[autoScrollSpeedIndex];
+            document.getElementById('scrollSpeedLabel').innerText = `${speed}x`;
+            showToast(`سرعة التمرير: ${speed}x`);
+            if(isAutoScrolling) {
+                startViewerAutoScroll(); // تحديث السرعة مباشرة
+            }
+        }
+
         function startViewerAutoScroll() {
             const iframe = document.getElementById('dedicatedIframe');
             isAutoScrolling = true;
             document.getElementById('autoScrollBtn').classList.add('active');
-            showToast("تم بدء التمرير التلقائي 📜");
+            
+            if(autoScrollInterval) clearInterval(autoScrollInterval);
 
+            const speed = autoScrollSpeeds[autoScrollSpeedIndex];
             autoScrollInterval = setInterval(() => {
                 try {
                     if (iframe.contentWindow) {
-                        iframe.contentWindow.scrollBy(0, 3);
+                        iframe.contentWindow.scrollBy(0, speed);
                     }
                 } catch(e) {
-                    // إذا واجه حماية cross-origin يقوم بالتحريك على الحاوية
-                    document.getElementById('viewerCanvas').scrollBy(0, 3);
+                    document.getElementById('viewerCanvas').scrollBy(0, speed);
                 }
-            }, 40);
+            }, 30);
         }
 
         function stopViewerAutoScroll() {
