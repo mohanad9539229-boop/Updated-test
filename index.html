@@ -462,11 +462,12 @@
         input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* 🖥️ شاشة العرض داخل الموقع المخصصة (Dedicated In-Site Viewer Screen) 🖥️ */
+        /* 🖥️ شاشة العرض داخل الموقع المخصصة والاحترافية (Dedicated In-Site Viewer Screen) 🖥️ */
         .dedicated-viewer-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #0b0304; z-index: 1000000;
             display: none; flex-direction: column; overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .dedicated-viewer-screen.active { display: flex; }
@@ -474,15 +475,19 @@
         .viewer-top-bar {
             height: 55px; background: #120406; border-bottom: 1px solid var(--border-color);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 1rem; gap: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            padding: 0 0.8rem; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
             z-index: 10;
         }
 
-        .viewer-bar-left, .viewer-bar-right { display: flex; align-items: center; gap: 8px; }
+        .viewer-bar-left, .viewer-bar-right { display: flex; align-items: center; gap: 6px; }
 
         .viewer-title-info {
             font-size: 0.85rem; font-weight: bold; color: #fff;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;
+        }
+
+        @media (min-width: 768px) {
+            .viewer-title-info { max-width: 400px; }
         }
 
         .viewer-canvas {
@@ -492,6 +497,16 @@
         .viewer-frame {
             width: 100%; height: 100%; border: none; background: #fff;
         }
+
+        /* مؤشر تحميل القارئ الداخلي */
+        .viewer-loading-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 3, 4, 0.92); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 12px; color: #fff;
+            z-index: 5; transition: opacity 0.3s;
+        }
+
+        .viewer-loading-overlay.hidden { opacity: 0; pointer-events: none; }
 
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: var(--accent-color); color: #fff; padding: 0.8rem 1.8rem; border-radius: 30px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 8px 25px rgba(229,9,20,0.5); transition: transform 0.3s; z-index: 100000; }
         .toast.show { transform: translateX(-50%) translateY(0); }
@@ -706,12 +721,15 @@
         </div>
     </div>
 
-    <!-- 🖥️ صفحة العرض المخصصة داخل الموقع (Dedicated In-Site Viewer Screen) 🖥️ -->
+    <!-- 🖥️ صفحة العرض المخصصة داخل الموقع بأسلوب محترف (Dedicated In-Site Viewer Screen) 🖥️ -->
     <div class="dedicated-viewer-screen" id="dedicatedViewerScreen">
         <div class="viewer-top-bar">
             <div class="viewer-bar-left">
                 <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="closeDedicatedViewer()">
                     <i class="fa-solid fa-arrow-right"></i> رجوع
+                </button>
+                <button class="btn btn-outline" title="إعادة تحميل الصفحة" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="reloadViewerPage()">
+                    <i class="fa-solid fa-rotate-right"></i>
                 </button>
                 <div class="viewer-title-info" id="viewerTitleInfo">اسم المانهوا - المصدر</div>
             </div>
@@ -720,13 +738,20 @@
                 <button class="btn btn-translate" id="viewerTranslateBtn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="translateViewerPage()">
                     <i class="fa-solid fa-language"></i> ترجمة الصفحة
                 </button>
+                <button class="btn btn-outline" title="نسخ الرابط" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="copyViewerLink()">
+                    <i class="fa-solid fa-link"></i>
+                </button>
                 <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="openViewerExternal()">
                     <i class="fa-solid fa-arrow-up-right-from-square"></i> فتح خارجي
                 </button>
             </div>
         </div>
         <div class="viewer-canvas">
-            <iframe id="dedicatedIframe" class="viewer-frame" src="" allowfullscreen></iframe>
+            <div class="viewer-loading-overlay" id="viewerLoadingOverlay">
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--accent-color);"></i>
+                <span style="font-size: 0.85rem; font-weight: bold;">جاري تحميل المصدر داخل الموقع...</span>
+            </div>
+            <iframe id="dedicatedIframe" class="viewer-frame" src="" allowfullscreen onload="onViewerIframeLoad()"></iframe>
         </div>
     </div>
 
@@ -829,7 +854,7 @@
         let isSpinning = false;
         let wheelItems = [];
 
-        // متغيرات صفحة العرض المخصصة
+        // متغيرات صفحة العرض المخصصة (Dedicated Viewer)
         let currentViewerUrl = "";
         let isViewerPageTranslated = false;
 
@@ -1380,7 +1405,7 @@
             }
         }
 
-        /* 🖥️ وظائف الشاشة المخصصة للعرض داخل الموقع (Dedicated Viewer Engine) 🖥️ */
+        /* 🖥️ وظائف الشاشة المخصصة والتفاعلية للعرض داخل الموقع (Dedicated Viewer Engine) 🖥️ */
         function openDedicatedViewer(url, titleInfo) {
             currentViewerUrl = url;
             isViewerPageTranslated = false;
@@ -1388,12 +1413,37 @@
             document.getElementById('viewerTitleInfo').innerText = titleInfo;
             document.getElementById('viewerTranslateBtn').innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الصفحة`;
             
+            const overlay = document.getElementById('viewerLoadingOverlay');
+            if(overlay) overlay.classList.remove('hidden');
+
             const iframe = document.getElementById('dedicatedIframe');
             iframe.src = url;
 
             document.getElementById('dedicatedViewerScreen').classList.add('active');
             closeModal();
-            showToast("جاري فتح الموقع داخل المنصة... 🌐");
+            showToast("جاري فتح المصدر... 🌐");
+        }
+
+        function onViewerIframeLoad() {
+            const overlay = document.getElementById('viewerLoadingOverlay');
+            if(overlay) overlay.classList.add('hidden');
+        }
+
+        function reloadViewerPage() {
+            const iframe = document.getElementById('dedicatedIframe');
+            if(iframe && currentViewerUrl) {
+                document.getElementById('viewerLoadingOverlay').classList.remove('hidden');
+                iframe.src = isViewerPageTranslated ? 
+                    `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(currentViewerUrl)}` : 
+                    currentViewerUrl;
+                showToast("جاري إعادة تحديث الصفحة... 🔄");
+            }
+        }
+
+        function copyViewerLink() {
+            if (currentViewerUrl) {
+                navigator.clipboard.writeText(currentViewerUrl).then(() => showToast("تم نسخ رابط الصفحة بنجاح! 📋"));
+            }
         }
 
         function closeDedicatedViewer() {
@@ -1417,13 +1467,15 @@
 
             if (!currentViewerUrl) return;
 
+            document.getElementById('viewerLoadingOverlay').classList.remove('hidden');
+
             if (isViewerPageTranslated) {
                 iframe.src = currentViewerUrl;
                 btn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الصفحة`;
                 isViewerPageTranslated = false;
                 showToast("تمت العودة للغة الأصلية");
             } else {
-                // استخدام محرك الترجمة عبر Google Translate Proxy للعرض الداخلي المترجم
+                // استخدام محرك الترجمة جوجل المترجم للروابط لضمان ترجمة الصفحة بأكملها داخل الـ Viewer
                 const translatedProxyUrl = `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(currentViewerUrl)}`;
                 iframe.src = translatedProxyUrl;
                 btn.innerHTML = `<i class="fa-solid fa-undo"></i> اللغة الأصلية`;
@@ -1432,7 +1484,7 @@
             }
         }
 
-        // التفاصيل والترجمة
+        // التفاصيل والترجمة العامة باستعمال Google Translate API 
         function openModal(item) {
             activeItem = item;
             isTranslated = false;
@@ -1465,6 +1517,7 @@
             document.getElementById('modalOverlay').classList.add('active');
         }
 
+        /* 🔤 محرك ترجمة الأوصاف المعتمد عبر Google Translate API 🔤 */
         async function translateCurrentDesc() {
             const tBtn = document.getElementById('translateBtn');
             const descEl = document.getElementById('modalDesc');
