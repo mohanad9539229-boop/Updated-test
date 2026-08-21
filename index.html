@@ -347,7 +347,7 @@
         .playlist-item-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
         .playlist-del-btn { color: #ff4757; background: transparent; border: none; cursor: pointer; padding: 2px 6px; }
 
-        /* 🎡 كود وتصميم عجلة الحظ الاحترافية (Canvas Wheel) 🎡 */
+        /* 🎡 عجلة الحظ (Canvas Wheel) 🎡 */
         .wheel-container {
             position: relative;
             width: 280px;
@@ -418,7 +418,7 @@
         .status-option { flex: 1; text-align: center; padding: 6px 4px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; color: var(--text-dim); }
         .status-option.active { background: var(--accent-dark); color: #fff; font-weight: bold; }
 
-        /* 🌐 تصميم مفتاح تفعيل العرض داخل الموقع (In-Site View Toggle) 🌐 */
+        /* 🌐 زر تفعيل العرض داخل الموقع 🌐 */
         .view-mode-toggle-box {
             display: flex;
             align-items: center;
@@ -462,7 +462,7 @@
         input:checked + .slider { background-color: var(--accent-color); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* 🖥️ شاشة العرض داخل الموقع المخصصة والاحترافية (Dedicated In-Site Viewer Screen) 🖥️ */
+        /* 🖥️ شاشة القارئ المتقدمة داخل الموقع (Advanced In-Site Viewer Engine) 🖥️ */
         .dedicated-viewer-screen {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background-color: #0b0304; z-index: 1000000;
@@ -473,40 +473,79 @@
         .dedicated-viewer-screen.active { display: flex; }
 
         .viewer-top-bar {
-            height: 55px; background: #120406; border-bottom: 1px solid var(--border-color);
+            min-height: 55px; background: #120406; border-bottom: 1px solid var(--border-color);
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 0.8rem; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-            z-index: 10;
+            padding: 0.4rem 0.8rem; gap: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            z-index: 10; flex-wrap: wrap;
         }
 
-        .viewer-bar-left, .viewer-bar-right { display: flex; align-items: center; gap: 6px; }
+        .viewer-bar-left, .viewer-bar-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 
         .viewer-title-info {
             font-size: 0.85rem; font-weight: bold; color: #fff;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px;
         }
 
         @media (min-width: 768px) {
-            .viewer-title-info { max-width: 400px; }
+            .viewer-title-info { max-width: 380px; }
         }
 
         .viewer-canvas {
-            flex-grow: 1; width: 100%; height: calc(100vh - 55px); position: relative; background: #000;
+            flex-grow: 1; width: 100%; height: calc(100vh - 55px); position: relative; background: #000; overflow: hidden;
         }
 
         .viewer-frame {
-            width: 100%; height: 100%; border: none; background: #fff;
+            width: 100%; height: 100%; border: none; background: #fff; transition: filter 0.3s ease;
         }
 
-        /* مؤشر تحميل القارئ الداخلي */
+        /* الفلتر الليلي للقارئ */
+        .viewer-night-filter {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.45); pointer-events: none; z-index: 4;
+            display: none; mix-blend-mode: multiply;
+        }
+        .viewer-night-filter.active { display: block; }
+
+        /* مؤشر التحميل */
         .viewer-loading-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 3, 4, 0.92); display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: 12px; color: #fff;
+            background: rgba(11, 3, 4, 0.94); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 14px; color: #fff;
             z-index: 5; transition: opacity 0.3s;
         }
 
         .viewer-loading-overlay.hidden { opacity: 0; pointer-events: none; }
+
+        /* واجهة التنبيه عند حظر الترجمة أو الإطار (Blocked Overlay) */
+        .viewer-blocked-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(11, 3, 4, 0.96); backdrop-filter: blur(8px);
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            padding: 1.5rem; text-align: center; color: #fff; z-index: 6; gap: 12px;
+        }
+        .viewer-blocked-overlay.active { display: flex; }
+        .viewer-blocked-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: var(--radius-md); padding: 1.5rem; max-width: 480px; width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; flex-direction: column; gap: 12px;
+        }
+
+        /* أدوات التمرير التلقائي السريعة */
+        .viewer-controls-floater {
+            position: absolute; bottom: 20px; right: 20px; z-index: 8;
+            display: flex; flex-direction: column; gap: 8px; background: rgba(18, 4, 6, 0.85);
+            backdrop-filter: blur(6px); border: 1px solid var(--border-color);
+            padding: 8px; border-radius: 30px; box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+        }
+
+        .viewer-float-btn {
+            width: 38px; height: 38px; border-radius: 50%; border: none;
+            background: rgba(255,255,255,0.08); color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .viewer-float-btn:hover { background: var(--accent-color); transform: scale(1.1); }
+        .viewer-float-btn.active { background: var(--accent-color); box-shadow: 0 0 12px var(--accent-color); }
 
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background-color: var(--accent-color); color: #fff; padding: 0.8rem 1.8rem; border-radius: 30px; font-size: 0.9rem; font-weight: bold; box-shadow: 0 8px 25px rgba(229,9,20,0.5); transition: transform 0.3s; z-index: 100000; }
         .toast.show { transform: translateX(-50%) translateY(0); }
@@ -520,7 +559,7 @@
     <header>
         <div class="header-content">
             <h1>SLAX <span>MANHWA</span> <i class="fa-solid fa-fire-flame-curved" style="font-size: 1.8rem;"></i></h1>
-            <p class="sub">تصفح وقراءة المانهوا الكورية مع نظام فلترة شامل ومشغل موسيقى مميز</p>
+            <p class="sub">تصفح وقراءة المانهوا الكورية مع نظام فلترة شامل وقارئ داخلي محسّن</p>
         </div>
     </header>
 
@@ -632,7 +671,7 @@
             <div class="album-art" id="albumArt"><i class="fa-solid fa-music"></i></div>
             <div class="track-info">
                 <div class="track-name" id="trackName">جاهز للتشغيل</div>
-                <div class="track-artist" id="trackArtist">الأغاني الأربعة موجودة بالمفضلة تلقائياً</div>
+                <div class="track-artist" id="trackArtist">الأغاني موجودة بالمفضلة تلقائياً</div>
             </div>
         </div>
 
@@ -670,7 +709,7 @@
                 </div>
             </div>
 
-            <!-- 🌐 خيار نظام العرض (داخل الموقع / فتح خارجي) 🌐 -->
+            <!-- 🌐 خيار نظام العرض 🌐 -->
             <div class="view-mode-toggle-box">
                 <div class="view-mode-label">
                     <i class="fa-solid fa-window-maximize" style="color:var(--accent-color);"></i>
@@ -721,15 +760,18 @@
         </div>
     </div>
 
-    <!-- 🖥️ صفحة العرض المخصصة داخل الموقع بأسلوب محترف (Dedicated In-Site Viewer Screen) 🖥️ -->
+    <!-- 🖥️ صفحة القارئ الاحترافية داخل الموقع (Advanced Viewer System) 🖥️ -->
     <div class="dedicated-viewer-screen" id="dedicatedViewerScreen">
         <div class="viewer-top-bar">
             <div class="viewer-bar-left">
                 <button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="closeDedicatedViewer()">
                     <i class="fa-solid fa-arrow-right"></i> رجوع
                 </button>
-                <button class="btn btn-outline" title="إعادة تحميل الصفحة" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="reloadViewerPage()">
+                <button class="btn btn-outline" title="إعادة تحميل" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="reloadViewerPage()">
                     <i class="fa-solid fa-rotate-right"></i>
+                </button>
+                <button class="btn btn-outline" title="حفظ العلامة" style="padding: 0.4rem 0.7rem; font-size: 0.8rem; color:#f59e0b;" onclick="saveViewerBookmark()">
+                    <i class="fa-solid fa-bookmark"></i>
                 </button>
                 <div class="viewer-title-info" id="viewerTitleInfo">اسم المانهوا - المصدر</div>
             </div>
@@ -737,6 +779,12 @@
             <div class="viewer-bar-right">
                 <button class="btn btn-translate" id="viewerTranslateBtn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="translateViewerPage()">
                     <i class="fa-solid fa-language"></i> ترجمة الصفحة
+                </button>
+                <button class="btn btn-outline" title="وضع الليل للعين" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="toggleViewerNightMode()">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+                <button class="btn btn-outline" title="ملء الشاشة" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="toggleViewerFullscreen()">
+                    <i class="fa-solid fa-expand"></i>
                 </button>
                 <button class="btn btn-outline" title="نسخ الرابط" style="padding: 0.4rem 0.7rem; font-size: 0.8rem;" onclick="copyViewerLink()">
                     <i class="fa-solid fa-link"></i>
@@ -746,16 +794,44 @@
                 </button>
             </div>
         </div>
-        <div class="viewer-canvas">
+
+        <div class="viewer-canvas" id="viewerCanvas">
+            <!-- فلتر القراءة الليلي -->
+            <div class="viewer-night-filter" id="viewerNightOverlay"></div>
+
+            <!-- مؤشر التحميل -->
             <div class="viewer-loading-overlay" id="viewerLoadingOverlay">
-                <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2rem; color: var(--accent-color);"></i>
-                <span style="font-size: 0.85rem; font-weight: bold;">جاري تحميل المصدر داخل الموقع...</span>
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 2.2rem; color: var(--accent-color);"></i>
+                <span style="font-size: 0.9rem; font-weight: bold;" id="viewerLoadingText">جاري تحميل المصدر داخل القارئ...</span>
             </div>
-            <iframe id="dedicatedIframe" class="viewer-frame" src="" allowfullscreen onload="onViewerIframeLoad()"></iframe>
+
+            <!-- تنبيه حظر العرض/الترجمة (يمنع الشاشة البيضاء!) -->
+            <div class="viewer-blocked-overlay" id="viewerBlockedOverlay">
+                <div class="viewer-blocked-card">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 2.5rem; color: var(--accent-color);"></i>
+                    <h3 style="font-size: 1.1rem; color: #fff;">تم تقييد عرض الصفحة/الترجمة داخل الإطار</h3>
+                    <p style="font-size: 0.82rem; color: var(--text-dim); line-height: 1.6;">
+                        هذا الموقع أو سيرفر الترجمة يفرض حماية أمنية (X-Frame-Options) تمنع عرضه كإطار داخلي. يمكنك فتحه فوراً في تبويب جديد أو العودة للأصل.
+                    </p>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 5px;">
+                        <button class="btn" style="flex:1;" onclick="openTranslatedTabDirect()"><i class="fa-solid fa-arrow-up-right-from-square"></i> فتح الترجمة بالمتصفح</button>
+                        <button class="btn btn-outline" style="flex:1;" onclick="restoreViewerOriginal()"><i class="fa-solid fa-undo"></i> العودة للأصل</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- أدوات التحكم بالتمرير العائمة -->
+            <div class="viewer-controls-floater">
+                <button class="viewer-float-btn" onclick="scrollViewer('top')" title="لأعلى الصفحة"><i class="fa-solid fa-arrow-up"></i></button>
+                <button class="viewer-float-btn" id="autoScrollBtn" onclick="toggleViewerAutoScroll()" title="تمرير تلقائي"><i class="fa-solid fa-angles-down"></i></button>
+                <button class="viewer-float-btn" onclick="scrollViewer('bottom')" title="لأسفل الصفحة"><i class="fa-solid fa-arrow-down"></i></button>
+            </div>
+
+            <iframe id="dedicatedIframe" class="viewer-frame" src="" allowfullscreen onload="onViewerIframeLoad()" onerror="handleViewerIframeError()"></iframe>
         </div>
     </div>
 
-    <!-- 🎡 Modal عجلة الحظ الحقيقية المرسومة بالـ Canvas 🎡 -->
+    <!-- 🎡 Modal عجلة الحظ 🎡 -->
     <div class="modal-overlay" id="wheelModalOverlay" onclick="closeWheelModal()">
         <div class="modal" onclick="event.stopPropagation()" style="text-align: center; padding: 1.5rem;">
             <button class="modal-close" onclick="closeWheelModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -812,7 +888,7 @@
         const blockedGenres = ["Boys Love", "Ecchi", "Hentai", "Yaoi", "Erotica", "Shounen Ai", "Yuri", "Shoujo Ai"];
         const initialExcluded = [136331, 137304, 117540, 130870, 97897, 115000, 151025, 103156, 137595, 119276];
 
-        // 🎵 الأغاني الأربعة الافتراضية المضمنة دائمًا 🎵
+        // 🎵 الأغاني الأربعة الافتراضية المضمنة 🎵
         const defaultMusicPlaylist = [
             { id: 101, name: "Funk★Celeste Slowed", url: "https://youtu.be/T5iBKZmcO5s?si=1mMYa2UK7SCOm9Qo" },
             { id: 102, name: "Phonk Audio / Song 1", url: "https://youtu.be/pmZ7hTChGAY?si=30dQRI-VePy4zlSq" },
@@ -829,7 +905,6 @@
         let savedTheme = localStorage.getItem('slax_theme') || 'default';
         let useInSiteView = JSON.parse(localStorage.getItem('slax_insite_view')) ?? true;
 
-        // دمج الأغاني الأربعة تلقائياً
         let musicPlaylist = [...storedMusic];
         defaultMusicPlaylist.forEach(defSong => {
             if(!musicPlaylist.some(m => m.url === defSong.url)) {
@@ -854,16 +929,18 @@
         let isSpinning = false;
         let wheelItems = [];
 
-        // متغيرات صفحة العرض المخصصة (Dedicated Viewer)
+        // متغيرات القارئ المتقدم (Dedicated Viewer)
         let currentViewerUrl = "";
         let isViewerPageTranslated = false;
+        let autoScrollInterval = null;
+        let isAutoScrolling = false;
+        let viewerTimeoutTimer = null;
 
         if (savedTheme !== 'default') {
             document.body.className = `theme-${savedTheme}`;
             document.getElementById('themeSelector').value = savedTheme;
         }
 
-        // تهيئة إعداد العرض داخل الموقع
         document.addEventListener("DOMContentLoaded", () => {
             const toggle = document.getElementById('inSiteViewToggle');
             if(toggle) toggle.checked = useInSiteView;
@@ -920,7 +997,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // رسم النص
                 ctx.save();
                 ctx.translate(140, 140);
                 ctx.rotate(angle + arcSize / 2);
@@ -1164,9 +1240,7 @@
                 const card = document.createElement('div');
                 card.className = 'card';
                 card.setAttribute('data-id', item.id);
-                card.onclick = (e) => {
-                    openModal(item);
-                };
+                card.onclick = () => openModal(item);
 
                 card.innerHTML = `
                     ${isTrending ? '<span class="trending-badge">🔥 تريند</span>' : ''}
@@ -1288,7 +1362,7 @@
             });
         }
 
-        /* 🎵 مشغل يوتيوب المخصص ونظام سبوتيفاي 🎵 */
+        /* 🎵 مشغل الموسيقى 🎵 */
         function toggleSpotifyWidget() { document.getElementById('spotifyWidget').classList.toggle('active'); }
         function toggleViewport() { document.getElementById('playerViewport').classList.toggle('active'); }
         function togglePlaylistView() { document.getElementById('playlistContainer').classList.toggle('active'); }
@@ -1386,7 +1460,7 @@
             }
         }
 
-        // 🌐 التعامل مع النقر على مصادر المانهوا (فتح خارجي أو داخل الموقع) 🌐
+        // 🌐 التعامل مع مصادر المانهوا 🌐
         function handleSourceClick(baseUrl, sourceName) {
             if (!activeItem) return;
             const title = activeItem.title.english || activeItem.title.romaji;
@@ -1405,7 +1479,7 @@
             }
         }
 
-        /* 🖥️ وظائف الشاشة المخصصة والتفاعلية للعرض داخل الموقع (Dedicated Viewer Engine) 🖥️ */
+        /* 🖥️ المحرك الاحترافي الجديد للقارئ الداخلي (Dedicated Viewer Engine) 🖥️ */
         function openDedicatedViewer(url, titleInfo) {
             currentViewerUrl = url;
             isViewerPageTranslated = false;
@@ -1413,7 +1487,10 @@
             document.getElementById('viewerTitleInfo').innerText = titleInfo;
             document.getElementById('viewerTranslateBtn').innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الصفحة`;
             
+            document.getElementById('viewerBlockedOverlay').classList.remove('active');
+            
             const overlay = document.getElementById('viewerLoadingOverlay');
+            document.getElementById('viewerLoadingText').innerText = "جاري تحميل المصدر داخل القارئ...";
             if(overlay) overlay.classList.remove('hidden');
 
             const iframe = document.getElementById('dedicatedIframe');
@@ -1422,16 +1499,37 @@
             document.getElementById('dedicatedViewerScreen').classList.add('active');
             closeModal();
             showToast("جاري فتح المصدر... 🌐");
+
+            // إعداد مؤقت حماية لمنع احتجاز المستخدم في شاشة تحميل معلقة أو بيضاء
+            if(viewerTimeoutTimer) clearTimeout(viewerTimeoutTimer);
+            viewerTimeoutTimer = setTimeout(() => {
+                if(overlay && !overlay.classList.contains('hidden')) {
+                    // إذا استغرق التحميل أكثر من 12 ثوانٍ قد يكون الموقع حظر العرض في الإطار
+                    showViewerBlockedNotice();
+                }
+            }, 12000);
         }
 
         function onViewerIframeLoad() {
+            if(viewerTimeoutTimer) clearTimeout(viewerTimeoutTimer);
             const overlay = document.getElementById('viewerLoadingOverlay');
             if(overlay) overlay.classList.add('hidden');
+        }
+
+        function handleViewerIframeError() {
+            showViewerBlockedNotice();
+        }
+
+        function showViewerBlockedNotice() {
+            const overlay = document.getElementById('viewerLoadingOverlay');
+            if(overlay) overlay.classList.add('hidden');
+            document.getElementById('viewerBlockedOverlay').classList.add('active');
         }
 
         function reloadViewerPage() {
             const iframe = document.getElementById('dedicatedIframe');
             if(iframe && currentViewerUrl) {
+                document.getElementById('viewerBlockedOverlay').classList.remove('active');
                 document.getElementById('viewerLoadingOverlay').classList.remove('hidden');
                 iframe.src = isViewerPageTranslated ? 
                     `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(currentViewerUrl)}` : 
@@ -1447,6 +1545,7 @@
         }
 
         function closeDedicatedViewer() {
+            stopViewerAutoScroll();
             const screen = document.getElementById('dedicatedViewerScreen');
             screen.classList.remove('active');
             document.getElementById('dedicatedIframe').src = "";
@@ -1461,30 +1560,138 @@
             }
         }
 
+        /* 🔤 إصلاح حظر ترجمة القارئ الذكي لحماية الصفحة من الشاشة البيضاء 🔤 */
         function translateViewerPage() {
             const btn = document.getElementById('viewerTranslateBtn');
             const iframe = document.getElementById('dedicatedIframe');
 
             if (!currentViewerUrl) return;
 
-            document.getElementById('viewerLoadingOverlay').classList.remove('hidden');
-
             if (isViewerPageTranslated) {
-                iframe.src = currentViewerUrl;
-                btn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الصفحة`;
-                isViewerPageTranslated = false;
-                showToast("تمت العودة للغة الأصلية");
+                // العودة للأصل
+                restoreViewerOriginal();
             } else {
-                // استخدام محرك الترجمة جوجل المترجم للروابط لضمان ترجمة الصفحة بأكملها داخل الـ Viewer
+                // ترجمة عبر خادم جوجل الترجمي
+                document.getElementById('viewerBlockedOverlay').classList.remove('active');
+                document.getElementById('viewerLoadingOverlay').classList.remove('hidden');
+                document.getElementById('viewerLoadingText').innerText = "جاري تفعيل محرك الترجمة الفورية...";
+
                 const translatedProxyUrl = `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(currentViewerUrl)}`;
                 iframe.src = translatedProxyUrl;
                 btn.innerHTML = `<i class="fa-solid fa-undo"></i> اللغة الأصلية`;
                 isViewerPageTranslated = true;
                 showToast("جاري ترجمة الصفحة إلى العربية... 🔤");
+
+                // كاشف حظر إطار جوجل لترجمة المواقع (ينقذ الشاشة من البيضاء!)
+                if(viewerTimeoutTimer) clearTimeout(viewerTimeoutTimer);
+                viewerTimeoutTimer = setTimeout(() => {
+                    const overlay = document.getElementById('viewerLoadingOverlay');
+                    if(overlay && !overlay.classList.contains('hidden')) {
+                        // إذا تم منع الإطار بواسطة جوجل
+                        showViewerBlockedNotice();
+                    }
+                }, 7000);
             }
         }
 
-        // التفاصيل والترجمة العامة باستعمال Google Translate API 
+        function restoreViewerOriginal() {
+            const btn = document.getElementById('viewerTranslateBtn');
+            const iframe = document.getElementById('dedicatedIframe');
+            document.getElementById('viewerBlockedOverlay').classList.remove('active');
+            iframe.src = currentViewerUrl;
+            btn.innerHTML = `<i class="fa-solid fa-language"></i> ترجمة الصفحة`;
+            isViewerPageTranslated = false;
+            showToast("تمت العودة للغة الأصلية");
+        }
+
+        function openTranslatedTabDirect() {
+            if (currentViewerUrl) {
+                const translatedProxyUrl = `https://translate.google.com/translate?sl=auto&tl=ar&u=${encodeURIComponent(currentViewerUrl)}`;
+                window.open(translatedProxyUrl, '_blank');
+                showToast("تم فتح صفحة الترجمة الفورية في تبويب جديد! 🌐");
+            }
+        }
+
+        /* 🌙 والوظائف الجديدة للقارئ (الوضع الليلي والتمرير التلقائي) 🌙 */
+        function toggleViewerNightMode() {
+            const nightOverlay = document.getElementById('viewerNightOverlay');
+            nightOverlay.classList.toggle('active');
+            const isActive = nightOverlay.classList.contains('active');
+            showToast(isActive ? "تم تفعيل فلتر الليل لحماية العين 🌙" : "تم إلغاء فلتر الليل ☀️");
+        }
+
+        function toggleViewerFullscreen() {
+            const screen = document.getElementById('dedicatedViewerScreen');
+            if (!document.fullscreenElement) {
+                screen.requestFullscreen().catch(err => {
+                    showToast("وضع ملء الشاشة مدعوم بالكامل في الأجهزة المحدثة");
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function saveViewerBookmark() {
+            if (!activeItem) return;
+            const title = activeItem.title.english || activeItem.title.romaji;
+            localStorage.setItem('slax_last_bookmark', JSON.stringify({
+                id: activeItem.id,
+                title: title,
+                url: currentViewerUrl,
+                date: new Date().toLocaleDateString('ar-EG')
+            }));
+            showToast("تم حفظ علامة القراءة الحالية بنجاح! 📌");
+        }
+
+        function toggleViewerAutoScroll() {
+            const btn = document.getElementById('autoScrollBtn');
+            if (isAutoScrolling) {
+                stopViewerAutoScroll();
+            } else {
+                startViewerAutoScroll();
+            }
+        }
+
+        function startViewerAutoScroll() {
+            const iframe = document.getElementById('dedicatedIframe');
+            isAutoScrolling = true;
+            document.getElementById('autoScrollBtn').classList.add('active');
+            showToast("تم بدء التمرير التلقائي 📜");
+
+            autoScrollInterval = setInterval(() => {
+                try {
+                    if (iframe.contentWindow) {
+                        iframe.contentWindow.scrollBy(0, 3);
+                    }
+                } catch(e) {
+                    // إذا واجه حماية cross-origin يقوم بالتحريك على الحاوية
+                    document.getElementById('viewerCanvas').scrollBy(0, 3);
+                }
+            }, 40);
+        }
+
+        function stopViewerAutoScroll() {
+            if (autoScrollInterval) clearInterval(autoScrollInterval);
+            isAutoScrolling = false;
+            const btn = document.getElementById('autoScrollBtn');
+            if(btn) btn.classList.remove('active');
+        }
+
+        function scrollViewer(direction) {
+            const iframe = document.getElementById('dedicatedIframe');
+            try {
+                if (iframe.contentWindow) {
+                    if (direction === 'top') iframe.contentWindow.scrollTo(0, 0);
+                    else iframe.contentWindow.scrollTo(0, 99999);
+                }
+            } catch(e) {
+                const canvas = document.getElementById('viewerCanvas');
+                if (direction === 'top') canvas.scrollTop = 0;
+                else canvas.scrollTop = canvas.scrollHeight;
+            }
+        }
+
+        // التفاصيل والترجمة للقصص
         function openModal(item) {
             activeItem = item;
             isTranslated = false;
@@ -1517,7 +1724,7 @@
             document.getElementById('modalOverlay').classList.add('active');
         }
 
-        /* 🔤 محرك ترجمة الأوصاف المعتمد عبر Google Translate API 🔤 */
+        /* 🔤 محرك ترجمة الأوصاف 🔤 */
         async function translateCurrentDesc() {
             const tBtn = document.getElementById('translateBtn');
             const descEl = document.getElementById('modalDesc');
